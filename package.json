@@ -4,7 +4,7 @@
   "description": "An experiment in more function testing.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./src/run-all.test.js"
   },
   "repository": {
     "type": "git",
