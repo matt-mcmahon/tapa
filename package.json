@@ -2,9 +2,9 @@
   "name": "@mwm/tapa",
   "version": "0.1.0",
   "description": "An experiment in more function testing.",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "standard ./src/**/*.js",
+    "test": "node ./src/run-all.test.js"
   },
   "repository": {
     "type": "git",

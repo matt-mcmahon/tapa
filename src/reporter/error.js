@@ -1,35 +1,24 @@
+'use strict'
+
 const PrettyError = require('pretty-error')
-const pe = new PrettyError()
-pe.skipNodeFiles()
 
-// ... which we can then use to customize like this:
-pe.appendStyle({
-  // this is a simple selector to the element that says 'Error'
+const style = color => ({
+  'pretty-error': {
+    marginLeft: 3
+  },
+
   'pretty-error > header > title > kind': {
-     // which we can hide:
     display: 'none'
   },
 
-  // the 'colon' after 'Error':
   'pretty-error > header > colon': {
-     // we hide that too:
     display: 'none'
   },
 
-  // our error message
   'pretty-error > header > message': {
-    // let's change its color:
     color: 'bright-white',
-
-     // we can use black, red, green, yellow, blue, magenta, cyan, white,
-     // grey, bright-red, bright-green, bright-yellow, bright-blue,
-     // bright-magenta, bright-cyan, and bright-white
-
-     // we can also change the background color:
-    background: 'red',
-
-     // it understands paddings too!
-    padding: '0 1' // top/bottom left/right
+    background: color,
+    padding: '0 1'
   },
 
   'pretty-error > trace': {
@@ -38,45 +27,26 @@ pe.appendStyle({
     paddingTop: 0,
     paddingBottom: 0
   },
-  // each trace item ...
+
   'pretty-error > trace > item': {
     marginTop: 0,
     marginBottom: 0,
     paddingTop: 0,
     paddingBottom: 0,
-
-     // ... can have a margin ...
     marginLeft: 2,
-
-     // ... and a bullet character!
-    bullet: '"<grey>⁃</grey>"'
-
-     // Notes on bullets:
-     //
-     // The string inside the quotation mark gets used as the character
-     // to show for the bullet point.
-     //
-     // You can set its color/background color using tags.
-     //
-     // This example sets the background color to white, and the text color
-     // to cyan, the character will be a hyphen with a space character
-     // on each side:
-     // example: '"<bg-white><cyan> - </cyan></bg-white>"'
-     //
-     // Note that we should use a margin of 3, since the bullet will be
-     // 3 characters long.
+    bullet: `"<grey>⁃</grey>"`
   },
 
   'pretty-error > trace > item > header > pointer > file': {
-    color: 'bright-red'
+    color: `bright-${color}`
   },
 
   'pretty-error > trace > item > header > pointer > colon': {
-    color: 'red'
+    color: color
   },
 
   'pretty-error > trace > item > header > pointer > line': {
-    color: 'bright-red'
+    color: `bright-${color}`
   },
 
   'pretty-error > trace > item > header > what': {
@@ -84,8 +54,23 @@ pe.appendStyle({
   },
 
   'pretty-error > trace > item > footer > addr': {
-    // display: 'none'
   }
 })
 
-module.exports = pe.render.bind(pe)
+const renderError = (color = 'red', err) => {
+  const pe = new PrettyError()
+  pe.skipNodeFiles()
+  pe.appendStyle(style(color))
+
+  return pe.render(err)
+}
+
+const catchUncaughtExceptions = () => {
+  process.on('uncaughtException', err => {
+    console.log(renderError('red', err))
+  })
+}
+
+module.exports = {
+  renderError, catchUncaughtExceptions
+}

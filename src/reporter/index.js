@@ -1,37 +1,44 @@
+'use strict'
+
 const chalk = require('chalk')
 const R = require('ramda')
-const { map, prop, pipe, tap, invoker, concat, toString } = R
+const T = require('../templates')
 
-const renderError = require('./error')
+const { renderError, catchUncaughtExceptions } = require('./error')
+catchUncaughtExceptions()
 
-const { pass, fail } = require('../templates')
+const cata = R.invoker(2, 'cata')
 
-const log = console.log.bind(console)
-const err = console.error.bind(console)
-const lf = tap(() => console.log(''))
-const cata = invoker(2, 'cata')
+const header = chalk.bgCyan.white(` File: ${module.parent.filename} `)
 
-const logPass = pipe(
-  prop('message'),
-  toString,
-  concat(chalk.green(pass)),
-  log
-)
+const renderAs = (icon, colorFn, errorColor = 'red', verbose = false) => assert => {
+  const messagePart = `${colorFn(icon)}  ${assert.message}`
 
-const logError = tap(pipe(
-  prop('result'),
-  renderError,
-  err
-))
+  const errorPart = R.is(Error, assert.result)
+                  ? renderError(errorColor, assert.result)
+                  : false
 
-const logFail = tap(pipe(
-  prop('message'),
-  toString,
-  concat(chalk.red(fail)),
-  err
-))
+  const printErrorReport = errorPart && (assert.verbose || verbose)
+  if (printErrorReport) {
+    return [messagePart, '', errorPart]
+  } else {
+    return [messagePart]
+  }
+}
 
-module.exports = map(cata(
-  pipe(logFail, lf, logError),
-  logPass
-))
+const renderPass = renderAs(T.pass, chalk.green, 'green')
+const renderFail = renderAs(T.fail, chalk.red, 'red', true)
+
+const printReport = assertions => {
+  console.log([
+    '',
+    '',
+    header,
+    '',
+    ...R.flatten(R.map(cata(renderFail, renderPass), assertions))
+  ].join('\n'))
+}
+
+module.exports = {
+  printReport
+}

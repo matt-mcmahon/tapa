@@ -1,3 +1,5 @@
+'use strict'
+
 const failPass = ([fail = 0, pass = 0]) => `
 
 Ran ${fail + pass} Tests:
@@ -10,10 +12,11 @@ const testHandler = ([message = 'Anonymous']) =>
 `Running tests "${message}"`
 
 const T = {
-  note: ['\u{0270E}', '✎', '!', '\u{0266A}', '♪'][2] + '  ',
-  pass: ['\u{02713}', '🗸', '√'][2] + '  ',
-  fail: ['\u{1F5F6}', '✗', 'x'][2] + '  ',
-  pend: ['\u{025A1}', '☐', '□', '\u{2043}', '⁃'][2] + '  ',
+  note: ['\u{0270E}', '✎', '!', '\u{0266A}', '♪'][2],
+  pass: ['\u{02713}', '🗸', '√'][2],
+  fail: ['\u{1F5F6}', '✗', 'x'][2],
+  pend: ['\u{025A1}', '☐', '□', '\u{2043}', '⁃'][2],
+  term: ['>'][0],
   failPass,
   testHandler
 }
