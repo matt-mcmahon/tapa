@@ -3,6 +3,8 @@ const chalk = require('chalk')
 
 const tests = [
   './src/assert/assert.test.js',
+  './src/assert/message.test.js',
+  './src/assert/predicate.test.js',
   './src/reporter/reporter.test.js',
   './src/tapa/tapa.test.js',
   './src/templates/templates.test.js'
