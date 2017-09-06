@@ -1,11 +1,16 @@
 const R = require('ramda')
+const { invoker } = R
+const { getDefaultPredicate } = require('./predicate')
+const { getDefaultMessage } = require('./message')
 const { IO, Validation, Success, Fail } = require('monet') //eslint-disable-line
 const { AssertionError } = require('assert')
+const flipValidation = invoker(2, 'cata')(Validation.success, Validation.fail)
 
 /**
- * @typedef {object} Assertion
+ * @typedef {object} Plan
+ *     _Plans_ an assertion test.
  *
- * @property {function} predicate
+ * @property {function} [predicate]
  *     Takes an optional _expected_ value, and then a required _actual_ value.
  *     The assertion passed if the function returns `true`.
  *     The assertion failed on any other return value.
@@ -24,39 +29,26 @@ const { AssertionError } = require('assert')
 
 /**
  * Creates an assertion based on the passed in predicate and expected value (if any).
- * @param {Assertion} assertion
+ * @param {Plan} plan
  * @return {Validation}
  */
-const assert = assertion => {
-  const {
-    predicate,
-    expected,
-    actual
-  } = assertion
+const assert = plan => {
+  const { expected, actual } = plan
 
-  if (typeof predicate !== 'function') {
-    const message = `assertion requires a predicate of type function`
-    return Fail(Object.assign({}, assertion, {
-      message,
-      result: new TypeError(message)
-    }))
-  }
+  const predicate = getDefaultPredicate(plan)
+  const message = getDefaultMessage(plan)
 
   const result = expected
     ? predicate(expected, actual)
     : predicate(actual)
 
-  const message = R.has('message', assertion)
-    ? assertion.message
-    : `Assert(Expected(${expected}), Actual(${actual}))`
-
   if (result === true) {
-    return Success(Object.assign({}, assertion, {
+    return Success(Object.assign({}, plan, {
       message,
       result
     }))
   } else {
-    return Fail(Object.assign({}, assertion, {
+    return Fail(Object.assign({}, plan, {
       message,
       result: new AssertionError({
         actual, expected, message
@@ -64,5 +56,10 @@ const assert = assertion => {
     }))
   }
 }
+
+assert.fails = R.pipe(assert, flipValidation)
+assert.comment = comment => Success({
+  message: comment
+})
 
 module.exports = { assert }
