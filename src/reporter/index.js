@@ -25,6 +25,7 @@ const logError = tap(pipe(
 ))
 
 const logFail = tap(pipe(
+  tap(err),
   prop('message'),
   toString,
   concat(chalk.red(fail)),
