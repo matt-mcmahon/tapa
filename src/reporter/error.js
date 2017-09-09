@@ -1,7 +1,16 @@
 'use strict'
 
 const PrettyError = require('pretty-error')
+const T = require('../templates')
 
+/**
+ * Returns a JSON-encoded CSS description for the Error report.
+ *
+ * @param {string} color - Base color used by accents in the report,
+ *                         `"red"`, `"green"`, `"blue"`, etc.
+ *
+ * @returns {CSS}
+ */
 const style = color => ({
   'pretty-error': {
     marginLeft: 3
@@ -34,7 +43,7 @@ const style = color => ({
     paddingTop: 0,
     paddingBottom: 0,
     marginLeft: 2,
-    bullet: `"<grey>⁃</grey>"`
+    bullet: `"<grey>${T.bull}</grey>"`
   },
 
   'pretty-error > trace > item > header > pointer > file': {
@@ -57,6 +66,15 @@ const style = color => ({
   }
 })
 
+/**
+ * Transforms the given error, `err`, into a color-encoded console string,
+ * using the base `color` (e.g. `"red"`, `"green"`, etc).
+ *
+ * @param {string} color - Base color used by accents in the report,
+ *                         "red", "green", "blue", etc.
+ * @param {Error} err    - The error we want pretty-printed.
+ * @returns {string} A color-encoded console string
+ */
 const renderError = (color = 'red', err) => {
   const pe = new PrettyError()
   pe.skipNodeFiles()
@@ -65,9 +83,12 @@ const renderError = (color = 'red', err) => {
   return pe.render(err)
 }
 
+/**
+ * Modifies the run-time so that Node will Pretty Print uncaught errors to `stderr`.
+ */
 const catchUncaughtExceptions = () => {
   process.on('uncaughtException', err => {
-    console.log(renderError('red', err))
+    console.error(renderError('red', err))
   })
 }
 
