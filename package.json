@@ -4,7 +4,8 @@
   "description": "An experiment in more function testing.",
   "scripts": {
     "lint": "standard ./src/**/*.js",
-    "test": "node ./src/run-all.test.js"
+    "test": "node ./src/test.js",
+    "watch": "node ./src/watch.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "chalk": "^2.1.0",
+    "chokidar": "^1.7.0",
     "monet": "^0.8.10",
     "pretty-error": "^2.1.1",
     "ramda": "^0.24.1"
