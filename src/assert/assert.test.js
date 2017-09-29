@@ -1,6 +1,6 @@
 'use strict'
 
-const { assert } = require('.')
+const assert = require('./assert')
 const { printReport } = require('../reporter')
 const R = require('ramda')
 const { equals, F } = R

@@ -1,6 +1,6 @@
 'use strict'
 
-const { watcher } = require('./test-runner')
+const { watcher } = require('../src/test-runner')
 
 const tests = watcher(`./src/**/*.test.js`)
 

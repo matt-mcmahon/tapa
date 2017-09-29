@@ -4,8 +4,8 @@
   "description": "An experiment in more function testing.",
   "scripts": {
     "lint": "standard ./src/**/*.js",
-    "test": "node ./src/test.js",
-    "watch": "node ./src/watch.js"
+    "test": "node ./scripts/run-tests.js",
+    "watch": "node ./scripts/watch-tests.js"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,9 @@
 'use strict'
 
 const PrettyError = require('pretty-error')
-const T = require('../templates')
+const R = require('ramda')
+
+const icons = require('../icons')
 
 /**
  * Returns a JSON-encoded CSS description for the Error report.
@@ -43,7 +45,7 @@ const style = color => ({
     paddingTop: 0,
     paddingBottom: 0,
     marginLeft: 2,
-    bullet: `"<grey>${T.bull}</grey>"`
+    bullet: `"<grey>${icons.bull}</grey>"`
   },
 
   'pretty-error > trace > item > header > pointer > file': {
@@ -92,6 +94,11 @@ const catchUncaughtExceptions = () => {
   })
 }
 
+const printError = R.pipe(
+  renderError,
+  console.err
+)
+
 module.exports = {
-  renderError, catchUncaughtExceptions
+  renderError, printError, catchUncaughtExceptions
 }

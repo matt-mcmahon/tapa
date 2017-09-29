@@ -1,6 +1,6 @@
 'use strict'
 
-const { runner } = require('./test-runner')
+const { runner } = require('../src/test-runner')
 
 const tests = runner(`./src/**/*.test.js`)
 
