@@ -2,80 +2,50 @@
 
 const R = require('ramda')
 const { invoker } = R
-const { getDefaultPredicate } = require('./predicate')
-const { getDefaultMessage } = require('./message')
-const { Validation, Success, Fail } = require('monet')
-const { AssertionError } = require('assert')
-const flipValidation = invoker(2, 'cata')(Validation.success, Validation.fail)
+const { Success, Fail } = require('monet')
 
-/**
- * @typedef  {function}    Predicate   - A function that returns true if it's
- *                                       arguments the given satisfy the
- *                                       predicate.
- * @param    {*}          [expected]   - A value that configures the predicate.
- * @param    {*}           actual      - The value that must satisfy the
- *                                       predicate.
- * @returns  {boolean}                 - `true` if the predicate is satisfied.
- */
+const { Invariant } = require('../invariant')
 
-/**
- * @typedef  {Object}      Plan        - An object who's properties describe an
- *                                       invariant we want to test.
- * @property {string}     [message]    - description of plan
- * @property {Predicate}  [predicate]  - invariant to test
- * @property {*}          [expected]   - value that sets the expectation for
- *                                       the predicate (if any)
- * @property {*}           actual      - value that must satisfy our invariant
- * @property {boolean}    [verbose]    - always print any generated `Error`s
- * @property {boolean}    [ignore]     - if true, this invariant won't be
- *                                       included in pass/fail metrics
- */
+const flipValidation = invoker(2, 'cata')(Success, Fail)
 
-/**
- * Creates an invariant assertion based on the given plan.
- *
- * @param {Plan} plan
- * @returns {Validation}
- */
-const assert = plan => {
-  const { expected, actual } = plan
-
-  const predicate = getDefaultPredicate(plan)
-  const message = getDefaultMessage(plan)
-
-  const result = expected
-    ? predicate(expected, actual)
-    : predicate(actual)
-
-  if (result === true) {
-    return Success(Object.assign({}, plan, {
-      message,
-      result
-    }))
-  } else {
-    return Fail(Object.assign({}, plan, {
-      message,
-      result: new AssertionError({
-        actual, expected, message
-      })
-    }))
-  }
+const captureStackTrace = (constructor, obj) => {
+  Error.captureStackTrace(obj, constructor)
+  return Invariant.of(obj)
 }
 
-assert.fails = R.pipe(assert, flipValidation)
+const Assert = plan => {
+  const append = value => plan.push(value)
 
-/**
- * Creates a plan that will be executed,
- * but who's results will be ignored by the reporter.
- *
- * @param {Plan} plan
- * @returns {Validation}
- */
-assert.ignore = R.pipe(R.assoc('ignore', true), assert)
+  const assert = block => {
+    append(captureStackTrace(assert, block))
+  }
 
-assert.comment = comment => Success({
-  note: true,
-  message: comment
-})
+  const fails = block => {
+    append(flipValidation(captureStackTrace(fails, block)))
+  }
 
-module.exports = assert
+  const ignore = block => {
+    append(captureStackTrace(ignore, R.assoc('ignore', true, block)))
+  }
+
+  const comment = message => append(captureStackTrace(comment, {
+    message: message
+  }))
+
+  assert.fails = fails
+  assert.ignore = ignore
+  assert.comment = comment
+
+  Object.defineProperties(assert, {
+    constructor: {
+      value: Assert
+    },
+    of: {
+      value: assert
+    }
+  })
+
+  return assert
+}
+
+module.exports = Assert

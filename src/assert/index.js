@@ -1,5 +1,7 @@
 'use strict'
 
+const assert = require('./assert')
+
 module.exports = {
-  assert: require('./assert')
+  assert, Assert: assert
 }
