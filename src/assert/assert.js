@@ -39,13 +39,12 @@ const Assert = plan => {
   Object.defineProperties(assert, {
     constructor: {
       value: Assert
-    },
-    of: {
-      value: assert
     }
   })
 
   return assert
 }
+
+Assert.of = plan => Assert(plan)
 
 module.exports = Assert
