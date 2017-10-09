@@ -18,7 +18,8 @@ const reportTitle = fileName => `Running Test: ${fileName}`
  */
 const cata = R.invoker(2, 'cata')
 
-const header = chalk.bgCyan.white(reportTitle(module.parent.filename))
+const header = ({ filename = module.parent.filename }) =>
+chalk.bgCyan.white(reportTitle(filename))
 
 const renderAs = ({
   bullet = icons.bull,
@@ -68,12 +69,12 @@ const renderFail = R.ifElse(
   })
 )
 
-const getReport = assertions => [
+const getReport = plan => [
   '',
   '',
-  header,
+  header(plan),
   '',
-  ...R.flatten(R.map(cata(renderFail, renderPass), assertions))
+  ...R.flatten(R.map(cata(renderFail, renderPass), plan))
 ]
 
 const printReport = R.pipe(
