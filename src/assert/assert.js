@@ -3,14 +3,14 @@
 const { assoc, clone, invoker } = require('ramda')
 const { Success, Fail } = require('monet')
 
-const { Invariant } = require('../invariant')
+const { invariant } = require('../invariant')
 
 const flipValidation = invoker(2, 'cata')(Success, Fail)
 
 const assocStack = (constructor, obj) => {
   const stack = clone(obj)
   Error.captureStackTrace(stack, constructor)
-  return Invariant.of(stack)
+  return invariant(stack)
 }
 
 const Assert = plan => {
@@ -21,7 +21,7 @@ const Assert = plan => {
   }
 
   const fails = invariantOptions => {
-    append(flipValidation(assocStack(fails, invariantOptions)))
+    append(assocStack(fails, assoc('fails', true, invariantOptions)))
   }
 
   const ignore = invariantOptions => {
