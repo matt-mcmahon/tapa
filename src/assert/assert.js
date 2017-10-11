@@ -1,35 +1,36 @@
 'use strict'
 
-const R = require('ramda')
-const { invoker } = R
+const { assoc, clone, invoker } = require('ramda')
 const { Success, Fail } = require('monet')
 
 const { Invariant } = require('../invariant')
 
 const flipValidation = invoker(2, 'cata')(Success, Fail)
 
-const captureStackTrace = (constructor, obj) => {
-  Error.captureStackTrace(obj, constructor)
-  return Invariant.of(obj)
+const assocStack = (constructor, obj) => {
+  const stack = clone(obj)
+  Error.captureStackTrace(stack, constructor)
+  return Invariant.of(stack)
 }
 
 const Assert = plan => {
   const append = value => plan.push(value)
 
-  const assert = block => {
-    append(captureStackTrace(assert, block))
+  const assert = invariantOptions => {
+    append(assocStack(assert, invariantOptions))
   }
 
-  const fails = block => {
-    append(flipValidation(captureStackTrace(fails, block)))
+  const fails = invariantOptions => {
+    append(flipValidation(assocStack(fails, invariantOptions)))
   }
 
-  const ignore = block => {
-    append(captureStackTrace(ignore, R.assoc('ignore', true, block)))
+  const ignore = invariantOptions => {
+    append(assocStack(ignore, assoc('ignore', true, invariantOptions)))
   }
 
-  const comment = message => append(captureStackTrace(comment, {
-    message: message
+  const comment = message => append(assocStack(comment, {
+    message: message,
+    predicate: () => true
   }))
 
   assert.fails = fails

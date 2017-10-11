@@ -7,35 +7,45 @@ const { equals, F, T } = R
 const invariant = require('./invariant')
 
 {
-  const i = invariant({ predicate: T })
+  const i = invariant({
+    predicate: T
+  })
   const actual = i.isSuccess()
   const message = `should pass, predicate returns true`
   assert.ok(actual, message)
 }
 
 {
-  const i = invariant({ predicate: F })
+  const i = invariant({
+    predicate: F
+  })
   const actual = i.isFail()
   const message = `should fail, predicate returns false`
   assert.ok(actual, message)
 }
 
 {
-  const i = invariant({ actual: 'something' })
+  const i = invariant({
+    actual: 'something'
+  })
   const actual = i.isSuccess()
   const message = `should pass, "something" is something`
   assert.ok(actual, message)
 }
 
 {
-  const i = invariant({ actual: [] })
+  const i = invariant({
+    actual: []
+  })
   const actual = i.isFail()
   const message = `should fail, empty array is nothing`
   assert.ok(actual, message)
 }
 
 {
-  const i = invariant({ actual: '' })
+  const i = invariant({
+    actual: ''
+  })
   const actual = i.isFail()
   const message = `should fail, empty string is nothing`
   assert.ok(actual, message)

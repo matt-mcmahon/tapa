@@ -5,10 +5,12 @@ const Plan = require('./plan')
 
 const description = 'Test Plan'
 
+const T = () => true
+
 const test = Plan.of(description, tapaAssert => {
-  tapaAssert({ message: 'test 1' })
-  tapaAssert({ message: 'test 2' })
-  tapaAssert({ message: 'test 3' })
+  tapaAssert({ message: 'test 1', predicate: T })
+  tapaAssert({ message: 'test 2', predicate: T })
+  tapaAssert({ message: 'test 3', predicate: T })
 })
 
 {

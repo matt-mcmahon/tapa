@@ -29,9 +29,7 @@ const renderAs = ({
 }) => assert => {
   const messagePart = `${colorFn(bullet)}  ${assert.message}`
 
-  const errorPart = R.is(Error, assert.result)
-                  ? renderError(errorColor, assert.result)
-                  : ''
+  const errorPart = renderError(errorColor, assert)
 
   const printErrorReport = !!errorPart && (!!assert.verbose || verbose)
 
