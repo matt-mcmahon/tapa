@@ -1,9 +1,9 @@
 'use strict'
 
 const { printReport } = require('.')
-const { Plan } = require('../plan')
+const { plan } = require('../plan')
 
-const p = Plan.of('Reporter Test', assert => {
+const p = plan('Reporter Test', assert => {
   assert({
     expected: 1,
     actual: 1,

@@ -1,13 +1,13 @@
 'use strict'
 
 const nodeAssert = require('assert')
-const Plan = require('./plan')
+const { of: plan } = require('./plan')
 
 const description = 'Test Plan'
 
 const T = () => true
 
-const test = Plan.of(description, tapaAssert => {
+const test = plan(description, tapaAssert => {
   tapaAssert({ message: 'test 1', predicate: T })
   tapaAssert({ message: 'test 2', predicate: T })
   tapaAssert({ message: 'test 3', predicate: T })
@@ -33,3 +33,11 @@ const test = Plan.of(description, tapaAssert => {
   const message = `Should be "${expected}" not "${actual}"`
   nodeAssert.deepStrictEqual(actual, expected, message)
 }
+
+const results = test.execute()
+
+console.dir(results, {
+  colors: true,
+  showHidden: true,
+  depth: 5
+})

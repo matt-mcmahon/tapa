@@ -1,11 +1,8 @@
 'use strict'
 
-const { assoc, clone, invoker } = require('ramda')
-const { Success, Fail } = require('monet')
+const { assoc, clone } = require('ramda')
 
 const { invariant } = require('../invariant')
-
-const flipValidation = invoker(2, 'cata')(Success, Fail)
 
 const assocStack = (constructor, obj) => {
   const stack = clone(obj)

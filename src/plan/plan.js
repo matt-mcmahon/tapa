@@ -1,6 +1,6 @@
 'use strict'
 
-const { Assert } = require('../assert')
+const { assert } = require('../assert')
 
 const getFirstParent = module => {
   if (module.parent) {
@@ -13,9 +13,18 @@ const getFirstParent = module => {
 class Plan extends Array {
   constructor (description, implementation) {
     super()
+
     this.description = description
     this.filename = getFirstParent(module)
-    implementation(Assert(this))
+    implementation(assert(this))
+  }
+
+  map (f) {
+    return [...this].map(f)
+  }
+
+  execute () {
+    return this.map(v => v.run())
   }
 
   static of (description, implementation) {
