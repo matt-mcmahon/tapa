@@ -1,6 +1,6 @@
 {
   "name": "@mwm/tapa",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "An experiment in more function testing.",
   "scripts": {
     "lint": "standard ./src/**/*.js",
