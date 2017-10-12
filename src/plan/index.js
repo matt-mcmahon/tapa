@@ -1,7 +1,7 @@
 'use strict'
 
-const plan = require('./plan')
+const Plan = require('./plan')
 
 module.exports = {
-  plan, Plan: plan
+  plan: Plan.of
 }

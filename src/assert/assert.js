@@ -1,16 +1,16 @@
 'use strict'
 
-const { assoc, clone, invoker } = require('ramda')
-const { Success, Fail } = require('monet')
+const { assoc, clone } = require('ramda')
 
-const { Invariant } = require('../invariant')
-
-const flipValidation = invoker(2, 'cata')(Success, Fail)
+const { invariant } = require('../invariant')
 
 const assocStack = (constructor, obj) => {
   const stack = clone(obj)
   Error.captureStackTrace(stack, constructor)
-  return Invariant.of(stack)
+  Object.defineProperty(stack, 'stack', {
+    enumerable: true
+  })
+  return invariant(stack)
 }
 
 const Assert = plan => {
@@ -21,11 +21,11 @@ const Assert = plan => {
   }
 
   const fails = invariantOptions => {
-    append(flipValidation(assocStack(fails, invariantOptions)))
+    append(assocStack(fails, assoc('fails', true, invariantOptions)))
   }
 
-  const ignore = invariantOptions => {
-    append(assocStack(ignore, assoc('ignore', true, invariantOptions)))
+  const skip = invariantOptions => {
+    append(assocStack(skip, assoc('skip', true, invariantOptions)))
   }
 
   const comment = message => append(assocStack(comment, {
@@ -34,7 +34,7 @@ const Assert = plan => {
   }))
 
   assert.fails = fails
-  assert.ignore = ignore
+  assert.skip = skip
   assert.comment = comment
 
   Object.defineProperties(assert, {

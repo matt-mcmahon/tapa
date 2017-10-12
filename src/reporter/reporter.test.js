@@ -1,9 +1,9 @@
 'use strict'
 
 const { printReport } = require('.')
-const { Plan } = require('../plan')
+const { plan } = require('../plan')
 
-const p = Plan.of('Reporter Test', assert => {
+const p = plan('Reporter Test', assert => {
   assert({
     expected: 1,
     actual: 1,
@@ -30,10 +30,10 @@ const p = Plan.of('Reporter Test', assert => {
     verbose: true
   })
 
-  assert.ignore({
+  assert.skip({
     expected: 1,
     actual: 2,
-    message: `should be ignored with a Yellow error report`,
+    message: `should be skipped with a Yellow error report`,
     verbose: true
   })
 })

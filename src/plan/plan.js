@@ -1,6 +1,6 @@
 'use strict'
 
-const { Assert } = require('../assert')
+const { assert } = require('../assert')
 
 const getFirstParent = module => {
   if (module.parent) {
@@ -15,7 +15,23 @@ class Plan extends Array {
     super()
     this.description = description
     this.filename = getFirstParent(module)
-    implementation(Assert(this))
+
+    if (typeof implementation === 'function') {
+      implementation(assert(this))
+    }
+  }
+
+  execute () {
+    this.forEach((inv, index, array) => {
+      array[index] = inv.run()
+    })
+    return this
+  }
+
+  // I'm using an incompatible constructor, so this is necessary in order to
+  // make map, concat, and other methods that return a new array work correctly.
+  static get [Symbol.species] () {
+    return Array
   }
 
   static of (description, implementation) {

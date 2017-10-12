@@ -4,22 +4,15 @@ const chalk = require('chalk')
 const R = require('ramda')
 const icons = require('../icons')
 
+const log = R.tap(R.bind(console.log, console))
+
 const { renderError, catchUncaughtExceptions } = require('./error')
 catchUncaughtExceptions()
 
-const reportTitle = fileName => `Running Test: ${fileName}`
-
-/**
- * @type {function(function, function)}
- * @param {function(A): bool} predicate
- * @param {function(A): B} whenFail
- * @param {function(A): C} whenPass
- * @return {B|C} This is the result
- */
 const cata = R.invoker(2, 'cata')
 
 const header = ({ filename = module.parent.filename }) =>
-chalk.bgCyan.white(reportTitle(filename))
+chalk.bgCyan.white(`Running Test: ${filename}`)
 
 const renderAs = ({
   bullet = icons.bull,
@@ -46,7 +39,7 @@ const renderSkip = renderAs({
   errorColor: 'yellow'
 })
 
-const renderPass = R.ifElse(
+const renderSuccess = R.ifElse(
   R.has('ignore'),
   renderSkip,
   renderAs({
@@ -67,18 +60,27 @@ const renderFail = R.ifElse(
   })
 )
 
-const getReport = plan => [
-  '',
-  '',
-  header(plan),
-  '',
-  ...R.flatten(R.map(cata(renderFail, renderPass), plan))
-]
+const renderInvariant = inv => {
+  if (inv.isSome && inv.isSome()) {
+    return renderSkip(inv.some())
+  } else if (inv.isFail()) {
+    return renderFail(inv.fail())
+  } else if (inv.isSuccess()) {
+    return renderSuccess(inv.success())
+  }
+}
 
-const printReport = R.pipe(
-  getReport,
-  R.join('\n'),
-  console.log
-)
+const printReport = plan => {
+  plan.execute()
+  const report = [
+    '',
+    '',
+    header(plan),
+    '',
+    ...R.flatten(R.map(renderInvariant, plan))
+  ]
+  console.log(report.join('\n'))
+  return plan
+}
 
 module.exports = printReport
