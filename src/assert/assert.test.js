@@ -91,27 +91,34 @@ tapa({
   actual: 1
 })
 
+tapa(function shouldAcceptFunctions () {
+  return true
+})
+
 {
-  const expected = 12
+  const expected = 13
   const actual = mockPlan.length
   const message = `plan.length should be ${expected} not ${actual}`
   nodeAssert.deepStrictEqual(actual, expected, message)
 }
 
 {
-  /* eslint-disable space-in-parens, no-multi-spaces */
-  const expected = [7, 5, 0]
+  const expected = [7, 5, 1]
 
   const actual = mockPlan
   .reduce(
-    ([pass, fail, skip], i) =>
-      i.run().cata(
+    ([pass, fail, skip], i) => {
+      nodeAssert.ok(R.has('stack', i), 'should have own property "stack"')
+      nodeAssert.ok(i.stack.length > 0, 'stack length should be > 0')
+      return i.run().cata(
         () => [pass, fail + 1, skip],
-        () => [pass + 1, fail, skip]
-      ),
+        v => v.skip
+          ? [pass, fail, skip + 1]
+          : [pass + 1, fail, skip]
+      )
+    },
     [0, 0, 0]
   )
-  const message = `${inspect(expected)} tests should pass, not ${inspect(actual)}`
+  const message = `result should be ${inspect(expected)}, not ${inspect(actual)}`
   nodeAssert.deepStrictEqual(actual, expected, message)
-  /* eslint-enable space-in-parens, no-multi-spaces */
 }

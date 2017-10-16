@@ -1,10 +1,10 @@
 'use strict'
 
-const { assoc, clone } = require('ramda')
+const { assoc, clone, pipe, tap, bind } = require('ramda')
 
 const { invariant } = require('../invariant')
 
-const assocStack = (constructor, obj) => {
+const assocStack = constructor => obj => {
   const stack = clone(obj)
   Error.captureStackTrace(stack, constructor)
   Object.defineProperty(stack, 'stack', {
@@ -13,25 +13,47 @@ const assocStack = (constructor, obj) => {
   return invariant(stack)
 }
 
+const processArgument = require('./process-argument')
+
 const Assert = plan => {
-  const append = value => plan.push(value)
+  const append = tap(bind(plan.push, plan))
 
   const assert = invariantOptions => {
-    append(assocStack(assert, invariantOptions))
+    return pipe(
+      processArgument,
+      assocStack(assert),
+      append
+    )(invariantOptions)
   }
 
   const fails = invariantOptions => {
-    append(assocStack(fails, assoc('fails', true, invariantOptions)))
+    return pipe(
+      processArgument,
+      assoc('fails', true),
+      assocStack(fails),
+      append
+    )(invariantOptions)
   }
 
   const skip = invariantOptions => {
-    append(assocStack(skip, assoc('skip', true, invariantOptions)))
+    return pipe(
+      processArgument,
+      assoc('skip', true),
+      assocStack(skip),
+      append
+    )(invariantOptions)
   }
 
-  const comment = message => append(assocStack(comment, {
-    message: message,
-    predicate: () => true
-  }))
+  const comment = message => {
+    return pipe(
+      processArgument,
+      assoc('skip', true),
+      assocStack(comment),
+      append
+    )({
+      message: message
+    })
+  }
 
   assert.fails = fails
   assert.skip = skip
