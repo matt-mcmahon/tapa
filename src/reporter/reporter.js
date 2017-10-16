@@ -4,12 +4,8 @@ const chalk = require('chalk')
 const R = require('ramda')
 const icons = require('../icons')
 
-const log = R.tap(R.bind(console.log, console))
-
 const { renderError, catchUncaughtExceptions } = require('./error')
 catchUncaughtExceptions()
-
-const cata = R.invoker(2, 'cata')
 
 const header = ({ filename = module.parent.filename }) =>
 chalk.bgCyan.white(`Running Test: ${filename}`)
@@ -19,22 +15,23 @@ const renderAs = ({
   colorFn = chalk.red,
   errorColor = 'red',
   verbose = false
-}) => assert => {
-  const messagePart = `${colorFn(bullet)}  ${assert.message}`
-
-  const errorPart = renderError(errorColor, assert)
-
-  const printErrorReport = !!errorPart && (!!assert.verbose || verbose)
-
-  if (printErrorReport) {
-    return [messagePart, '', errorPart]
+}) => invariant => {
+  const message = `${colorFn(bullet)}  ${invariant.message}`
+  if (invariant.verbose || verbose) {
+    return [
+      message,
+      '',
+      renderError(errorColor, invariant)
+    ]
   } else {
-    return [messagePart]
+    return [
+      message
+    ]
   }
 }
 
 const renderSkip = renderAs({
-  bullet: icons.pend,
+  bullet: icons.skip,
   colorFn: chalk.yellow,
   errorColor: 'yellow'
 })

@@ -8,7 +8,8 @@ const T = {
   fail: ['x', '\u{1F5F6}', '✗'][use],
   pend: ['□', '\u{025A1}', '☐'][use],
   bull: ['-', '\u{02043}', '⁃'][use],
-  term: ['>', '>', '>'][use]
+  skip: ['o', '\u{025CB}', '○'][use],
+  term: ['>', '\u{0203A}', '>'][use]
 }
 
 module.exports = T
