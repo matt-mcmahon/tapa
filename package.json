@@ -21,11 +21,11 @@
     "standard": "^10.0.3"
   },
   "dependencies": {
-    "chalk": "^2.1.0",
+    "chalk": "^2.2.0",
     "chokidar": "^1.7.0",
     "monet": "^0.8.10",
     "pretty-error": "^2.1.1",
-    "ramda": "^0.24.1"
+    "ramda": "^0.25.0"
   },
   "homepage": "https://github.com/matt-mcmahon/tapa#readme"
 }
