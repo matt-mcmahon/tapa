@@ -1,44 +1,40 @@
 'use strict'
 
-const recursiveClone = (value, refs) => {
-  const existingClone = refs.get(value)
-  if (existingClone) {
-    return existingClone
-  } else if (Array.isArray(value)) {
-    return cloneArray(value, refs)
-  } else if (value instanceof Date) {
-    return cloneDate(value)
-  } else if (value instanceof Object) {
-    return cloneObject(value, refs)
-  } else {
-    return value
-  }
+const recursiveClone = (value, map) => {
+  const existingClone = map.get(value)
+  if (existingClone) return existingClone
+  if (Array.isArray(value)) return cloneArray(value, map)
+  if (value instanceof Date) return cloneDate(value)
+  if (value instanceof Object) return cloneObject(value, map)
+  return value
 }
 
-const cloneArray = (arr, refs) => {
-  const clone = []
-  refs.set(arr, clone)
-  arr.reduce((clone, value) => {
-    clone.push(recursiveClone(value, refs))
-    return clone
-  }, clone)
-  return clone
+const cloneArray = (arr, map) => {
+  const copy = []
+  map.set(arr, copy)
+  arr.reduce((copy, value) => {
+    copy.push(recursiveClone(value, map))
+    return copy
+  }, copy)
+  return copy
 }
 
 const cloneDate = date => new Date(date.valueOf())
 
-const cloneObject = (obj, refs) => {
-  const clone = {}
-  refs.set(obj, clone)
+const cloneObject = (obj, map) => {
+  const copy = {}
+  map.set(obj, copy)
   const keys = Object.keys(obj)
-  keys.reduce((clone, key) => {
-    clone[key] = recursiveClone(obj[key], refs)
-    return clone
-  }, clone)
-  return clone
+  keys.reduce((copy, key) => {
+    copy[key] = recursiveClone(obj[key], map)
+    return copy
+  }, copy)
+  return copy
 }
 
-module.exports = value => recursiveClone(value, new Map())
+const clone = value => recursiveClone(value, new WeakMap())
+
+module.exports = clone
 
 /**
  * Adapted from:
