@@ -1,3 +1,5 @@
+'use strict'
+
 const test = require('../node-assert')
 const pipe = require('./pipe')
 
