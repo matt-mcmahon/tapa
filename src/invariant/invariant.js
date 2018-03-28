@@ -44,6 +44,10 @@ class Invariant {
   static of (description) {
     return new Invariant(description)
   }
+
+  static invariant (description) {
+    return new Invariant(description)
+  }
 }
 
 module.exports = Invariant

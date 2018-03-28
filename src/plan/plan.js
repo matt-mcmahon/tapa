@@ -37,6 +37,10 @@ class Plan extends Array {
   static of (description, implementation) {
     return new Plan(description, implementation)
   }
+
+  static plan (description, implementation) {
+    return new Plan(description, implementation)
+  }
 }
 
 module.exports = Plan
