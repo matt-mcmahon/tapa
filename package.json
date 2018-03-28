@@ -21,6 +21,7 @@
     "standard": "^10.0.3"
   },
   "dependencies": {
+    "@mwm/functional": "^1.0.0",
     "chalk": "^2.2.0",
     "chokidar": "^1.7.0",
     "monet": "^0.8.10",
