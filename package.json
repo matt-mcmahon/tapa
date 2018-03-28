@@ -11,8 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/matt-mcmahon/tapa.git"
   },
-  "keywords": [],
-  "author": "Matt McMahon <matt@broken-toys.com> (https://broken-toys.com/)",
+  "keywords": [
+    "experimental",
+    "testing",
+    "framework"
+  ],
+  "author": "Matt McMahon <contact@matt-mcmahon.com> (http://matt-mcmahon.com/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/matt-mcmahon/tapa/issues"
