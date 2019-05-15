@@ -1,53 +1,66 @@
-'use strict'
+import { Maybe, Success, Fail } from "monet"
+import {
+  complement,
+  either,
+  equals,
+  has,
+  isEmpty,
+  isNil,
+} from "@mwm/functional"
 
-const M = require('monet')
-const R = require('ramda')
+import getDefaultMessage from "./message"
 
-const getDefaultMessage = require('./message')
-
-const isSomething = R.complement(R.either(R.isNil, R.isEmpty))
+const isSomething = complement(either(isNil)(isEmpty))
 
 /* eslint-disable space-in-parens, no-multi-spaces */
 const evaluate = o => {
   const { predicate, expected, actual } = o
 
-  const p = R.has('predicate', o)
-  const e = R.has('expected',  o)
-  const a = R.has('actual',    o)
+  const p = has("predicate")(o)
+  const e = has("expected")(o)
+  const a = has("actual")(o)
 
-  if ( p && a && e ) return predicate(expected, actual)
-  if ( p && a      ) return predicate(actual)
-  if ( p           ) return predicate()
-  if (      a && e ) return R.equals(expected, actual)
-  if (      a      ) return isSomething(actual)
+  if (p && a && e) return predicate(expected, actual)
+  if (p && a) return predicate(actual)
+  if (p) return predicate()
+  if (a && e) return equals(expected)(actual)
+  if (a) return isSomething(actual)
 
-  throw new Error(`Invariant must have at least one of: predicate, actual`)
+  throw new Error(
+    `Invariant must have at least one of: predicate, actual`
+  )
 }
 /* eslint-enable space-in-parens, no-multi-spaces */
 
 class Invariant {
-  constructor (description) {
+  constructor(description) {
     Object.assign(this, description)
     this.message = getDefaultMessage(description)
   }
 
-  run () {
+  run() {
     if (this.skip) {
-      return M.Maybe.Some(this)
+      return Maybe.Some(this)
     } else if (this.fails) {
-      return evaluate(this) !== true ? M.Success(this) : M.Fail(this)
+      return evaluate(this) !== true
+        ? Success(this)
+        : Fail(this)
     } else {
-      return evaluate(this) === true ? M.Success(this) : M.Fail(this)
+      return evaluate(this) === true
+        ? Success(this)
+        : Fail(this)
     }
   }
 
-  static of (description) {
+  static of(description) {
     return new Invariant(description)
   }
 
-  static invariant (description) {
+  static invariant(description) {
     return new Invariant(description)
   }
 }
 
-module.exports = Invariant
+const invariant = description => new Invariant(description)
+
+export { invariant, Invariant, Invariant as default }

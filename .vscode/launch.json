@@ -9,6 +9,10 @@
       "request": "launch",
       "name": "Launch File",
       "program": "${file}",
+      "runtimeArgs": [
+        "-r",
+        "esm"
+      ],
       "outputCapture": "std"
     }
   ]

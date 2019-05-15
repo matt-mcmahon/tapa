@@ -1,20 +1,20 @@
-'use strict'
+"use strict"
 
-const nodeAssert = require('../node-assert')
-const { of: plan } = require('./plan')
+const nodeAssert = require("../node-assert")
+const { of: plan } = require("./plan")
 
-const description = 'Test Plan'
+const description = "Test Plan"
 
 const T = () => true
 
 const test = plan(description, tapaAssert => {
-  tapaAssert({ message: 'test 1', predicate: T })
-  tapaAssert({ message: 'test 2', predicate: T })
-  tapaAssert({ message: 'test 3', predicate: T })
+  tapaAssert({ message: "test 1", predicate: T })
+  tapaAssert({ message: "test 2", predicate: T })
+  tapaAssert({ message: "test 3", predicate: T })
 })
 
 nodeAssert(
-  __filename,
+  import.meta.url,
   t => {
     const expected = description
     const actual = test.description
@@ -28,7 +28,7 @@ nodeAssert(
     t.deepEqual(actual, expected, message)
   },
   t => {
-    const expected = __filename
+    const expected = import.meta.url
     const actual = test.filename
     const message = `Should be "${expected}" not "${actual}"`
     t.deepEqual(actual, expected, message)

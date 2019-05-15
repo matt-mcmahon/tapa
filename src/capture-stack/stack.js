@@ -1,7 +1,7 @@
 /**
  * Returns a copy of `target` _object_ that contains a new enumerable
- * property `stack`. This stack is a _string_ capturing the current
- * call-stack, but omitting any frames above the `omit` function.
+ * property, `stack`. The stack is a _string_ that captures the current
+ * call-stack, omitting any frames above the `omit` function.
  *
  * Specifically, we won't show frames for the function that decorates the
  * user's function.
@@ -14,8 +14,8 @@
  */
 const associateStack = (omit, target = {}) => {
   Error.captureStackTrace(target, omit)
-  Object.defineProperty(target, 'stack', {
-    enumerable: true
+  Object.defineProperty(target, "stack", {
+    enumerable: true,
   })
   return target
 }
@@ -29,10 +29,10 @@ const associateStack = (omit, target = {}) => {
  * @returns {function}
  */
 const decorateWithStack = factory => {
-  function decorated (...args) {
+  function decorated(...args) {
     return associateStack(decorated, factory(...args))
   }
   return decorated
 }
 
-module.exports = decorateWithStack
+export default decorateWithStack

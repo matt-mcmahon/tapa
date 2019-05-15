@@ -1,31 +1,29 @@
-'use strict'
-
-const test = require('../node-assert')
-const getDefaultMessage = require('./message')
+import test from "../node-assert"
+import getDefaultMessage from "./message"
 
 test(
-  __filename,
+  import.meta.url,
   t => {
-    const expected = 'default message'
+    const expected = "default message"
     const actual = getDefaultMessage({
-      message: 'default message'
+      message: "default message",
     })
     const message = `Should be "${expected}" not "${actual}"`
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = 'Assert(Expected(1), Actual(1))'
+    const expected = "Assert(Expected(1), Actual(1))"
     const actual = getDefaultMessage({
       expected: 1,
-      actual: 1
+      actual: 1,
     })
     const message = `Should be "${expected}" not "${actual}"`
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = 'Assert(Actual(1))'
+    const expected = "Assert(Actual(1))"
     const actual = getDefaultMessage({
-      actual: 1
+      actual: 1,
     })
     const message = `Should be "${expected}" not "${actual}"`
     t.deepStrictEqual(actual, expected, message)
