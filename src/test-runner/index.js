@@ -1,6 +1,6 @@
-'use strict'
+"use strict"
 
-const runner = require('./test-runner')
+const runner = require("./test-runner")
 
 module.exports = {
   runner: runner(false),

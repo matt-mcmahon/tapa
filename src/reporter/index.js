@@ -1,11 +1,13 @@
-'use strict'
+"use strict"
 
 const {
-  renderError, printError, catchUncaughtExceptions
-} = require('./error.js')
+  renderError,
+  printError,
+  catchUncaughtExceptions
+} = require("./error.js")
 
 module.exports = {
-  printReport: require('./reporter'),
+  printReport: require("./reporter"),
   renderError,
   printError,
   catchUncaughtExceptions

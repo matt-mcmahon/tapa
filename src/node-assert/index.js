@@ -1,7 +1,7 @@
-const assert = require('assert').strict
+const assert = require("assert").strict
 
-const pass = 'ok'
-const fail = 'not ok'
+const pass = "ok"
+const fail = "not ok"
 
 const test = (message, ...tests) => {
   const runTest = (test, id = ``) => {

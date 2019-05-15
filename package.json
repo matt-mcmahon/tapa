@@ -7,6 +7,8 @@
     "test": "node ./scripts/run-tests.js",
     "watch": "node ./scripts/watch-tests.js"
   },
+  "main": "index.js",
+  "module": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/matt-mcmahon/tapa.git"
@@ -21,16 +23,20 @@
   "bugs": {
     "url": "https://github.com/matt-mcmahon/tapa/issues"
   },
-  "devDependencies": {
-    "standard": "^10.0.3"
-  },
   "dependencies": {
-    "@mwm/functional": "^1.0.0",
-    "chalk": "^2.2.0",
-    "chokidar": "^1.7.0",
-    "monet": "^0.8.10",
+    "@mwm/functional": "^3.1.0",
+    "chalk": "^2.4.2",
+    "chokidar": "^2.1.5",
+    "esm": "^3.2.22",
+    "monet": "^0.9.0",
     "pretty-error": "^2.1.1",
-    "ramda": "^0.25.0"
+    "ramda": "^0.26.1"
+  },
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/chokidar": "^2.1.3",
+    "@types/ramda": "^0.26.7",
+    "prettier": "^1.17.0"
   },
   "homepage": "https://github.com/matt-mcmahon/tapa#readme"
 }

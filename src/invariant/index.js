@@ -1,6 +1,6 @@
-'use strict'
+"use strict"
 
-const Invariant = require('./invariant')
+const Invariant = require("./invariant")
 
 module.exports = {
   invariant: Invariant.of

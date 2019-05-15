@@ -1,10 +1,10 @@
-'use strict'
+"use strict"
 
-const test = require('../node-assert')
-const R = require('ramda')
+import test from "../node-assert"
+import R from "@mwm/functional"
 const { equals, F, T } = R
 
-const { invariant } = require('./invariant')
+import { invariant } from "./invariant.mjs"
 
 test(
   __filename,
@@ -26,7 +26,7 @@ test(
   },
   t => {
     const i = invariant({
-      actual: 'something'
+      actual: "something"
     })
     const actual = i.run().isSuccess()
     const message = `should pass, "something" is something`
@@ -42,7 +42,7 @@ test(
   },
   t => {
     const i = invariant({
-      actual: ''
+      actual: ""
     })
     const actual = i.run().isFail()
     const message = `should fail, empty string is nothing`

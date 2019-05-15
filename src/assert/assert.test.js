@@ -1,25 +1,25 @@
-'use strict'
+"use strict"
 
-const { inspect } = require('util')
-const test = require('../node-assert')
+const { inspect } = require("util")
+const test = require("../node-assert")
 
-const R = require('ramda')
+const R = require("ramda")
 const { equals, F } = R
 
 const mockPlan = []
 
-const tapaAssert = require('./assert')
+const tapaAssert = require("./assert")
 
 test(
   __filename,
   t => {
-    const expected = 'function'
+    const expected = "function"
     const actual = typeof tapaAssert
     const message = `tapaAssert should be a function`
     t.deepEqual(actual, expected, message)
   },
   t => {
-    const expected = 'function'
+    const expected = "function"
     const actual = typeof tapaAssert.of
     const message = `tapaAssert should have an "of" method`
     t.deepEqual(actual, expected, message)
@@ -27,7 +27,7 @@ test(
   t => {
     const tapa = tapaAssert.of(mockPlan)
 
-    tapa.comment('next assert should pass using default message')
+    tapa.comment("next assert should pass using default message")
 
     tapa({
       expected: 1,
@@ -41,7 +41,7 @@ test(
 
     tapa({
       message: `should pass because it's something`,
-      actual: 'something'
+      actual: "something"
     })
 
     tapa({
@@ -56,12 +56,12 @@ test(
 
     tapa({
       message: `empty string is empty`,
-      actual: ''
+      actual: ""
     })
 
     tapa({
       message: `"full" string is NOT empty`,
-      actual: 'full'
+      actual: "full"
     })
 
     tapa({
@@ -90,7 +90,7 @@ test(
       actual: 1
     })
 
-    tapa(function shouldAcceptFunctions () {
+    tapa(function shouldAcceptFunctions() {
       return true
     })
 
@@ -104,8 +104,8 @@ test(
 
     const actual = mockPlan.reduce(
       ([pass, fail, skip], i) => {
-        t.ok(R.has('stack', i), 'should have own property "stack"')
-        t.ok(i.stack.length > 0, 'stack length should be > 0')
+        t.ok(R.has("stack", i), 'should have own property "stack"')
+        t.ok(i.stack.length > 0, "stack length should be > 0")
         return i
           .run()
           .cata(
@@ -115,7 +115,9 @@ test(
       },
       [0, 0, 0]
     )
-    const message = `result should be ${inspect(expected)}, not ${inspect(actual)}`
+    const message = `result should be ${inspect(expected)}, not ${inspect(
+      actual
+    )}`
     t.deepEqual(actual, expected, message)
   }
 )

@@ -14,7 +14,7 @@
  */
 const associateStack = (omit, target = {}) => {
   Error.captureStackTrace(target, omit)
-  Object.defineProperty(target, 'stack', {
+  Object.defineProperty(target, "stack", {
     enumerable: true
   })
   return target
@@ -29,7 +29,7 @@ const associateStack = (omit, target = {}) => {
  * @returns {function}
  */
 const decorateWithStack = factory => {
-  function decorated (...args) {
+  function decorated(...args) {
     return associateStack(decorated, factory(...args))
   }
   return decorated

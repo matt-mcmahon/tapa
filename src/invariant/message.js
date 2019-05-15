@@ -1,30 +1,30 @@
-'use strict'
+"use strict"
 
-const R = require('ramda')
+const R = require("ramda")
 const { ifElse, has, both, always, defaultTo } = R
 
 const message = ifElse(
-  has('message'),
+  has("message"),
   ({ message }) => message,
   always(undefined) // needed for defaultTo
 )
 
 const expected = ifElse(
-  has('expected'),
+  has("expected"),
   ({ expected }) => `Expected(${expected})`,
-  always('')
+  always("")
 )
 
 const comma = ifElse(
-  both(has('actual'), has('expected')),
-  always(', '),
-  always('')
+  both(has("actual"), has("expected")),
+  always(", "),
+  always("")
 )
 
 const actual = ifElse(
-  has('actual'),
+  has("actual"),
   ({ actual }) => `Actual(${actual})`,
-  always('')
+  always("")
 )
 
 module.exports = plan => {
