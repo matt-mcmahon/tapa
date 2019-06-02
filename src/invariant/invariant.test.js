@@ -1,15 +1,13 @@
-'use strict'
-
-const test = require('../node-assert/index.js')
-const { T } = require('@mwm/functional')
-const { invariant } = require('./invariant.js')
+import test from "../node-assert/index.js"
+import { invariant } from "./invariant.js"
+import { T } from "@mwm/functional"
 
 test(
   __filename,
   async t => {
     try {
       const i = invariant({
-        predicate: T
+        predicate: T,
       })
       const actual = await i.evaluate()
       const message = `should pass, predicate returns true`

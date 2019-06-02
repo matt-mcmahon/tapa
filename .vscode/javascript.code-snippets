@@ -1,0 +1,56 @@
+{
+	"New Module File": {
+		"prefix": "new module",
+		"body": [
+			"const ${1:${TM_FILENAME_BASE}} = ${0:value => () => value}",
+			"",
+			"export { $1, $1 as default }"
+		],
+		"description": "Log output to console"
+	},
+	"New Test File": {
+		"prefix": "new test",
+		"body": [
+			"import { statSync } from \"fs\"",
+			"import { describe, Try } from \"riteway\"",
+			"import { ",
+			"  ${1:${TM_FILENAME_BASE/(.test|.spec)//}} as namedExport,",
+			"  default as $1 ",
+			"} from './$1.js'",
+			"import { $1 as indexExport } from './$1'",
+			"",
+			"describe(\"$1 module\", async assert => {",
+			"  assert({",
+			"    given: 'a module named \"./$1.js\"',",
+			"    should: \"have a default export\",",
+			"    actual: typeof $1,",
+			"    expected: \"function\",",
+			"  })",
+			"  ",
+			"  assert({",
+			"    given: 'import { $1 as namedExport } from \"./$1.js\"',",
+			"    should: \"be identical to default export\",",
+			"    actual: namedExport,",
+			"    expected: $1,",
+			"  })",
+			"  ",
+			"  assert({",
+			"    should: \"be identical to default export\",",
+			"    actual: indexExport,",
+			"    expected: $1,",
+			"  })",
+			"  ",
+			"  assert({",
+			"    given: 'a module named \"$1\"',",
+			"    should: 'have a \"$1.d.ts\" file',",
+			"    actual: Try(() => statSync(\"./$1.d.ts\").isFile()),",
+			"    expected: true,",
+			"  })",
+			"})",
+			"",
+			"describe('$1 functionality', async assert => {",
+			"  $0${2:throw new Error(\"No Functionality Tests\")}",
+			"})"
+		]
+	}
+}
