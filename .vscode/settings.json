@@ -12,5 +12,6 @@
     "markdown": {
       "parser": "xml"
     }
-  }
+  },
+  "terminal.integrated.shell.windows": "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe"
 }

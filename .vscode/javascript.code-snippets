@@ -1,4 +1,18 @@
 {
+	"Re-Export Module": {
+		"prefix": "rexport",
+		"body": [
+			"export { $1 } from \"./$1.js\"",
+		],
+		"description": "Re-Exports the Module"
+	},
+	"New TypeScript Definition File": {
+		"prefix": "new dts",
+		"body": [
+			"export declare const ${1:${TM_FILENAME/(.d.ts)//}}: ${0:value => () => value}"
+		],
+		"description": "Log output to console"
+	},
 	"New Module File": {
 		"prefix": "new module",
 		"body": [
@@ -11,8 +25,8 @@
 	"New Test File": {
 		"prefix": "new test",
 		"body": [
-			"import { statSync } from \"fs\"",
-			"import { describe, Try } from \"riteway\"",
+			"import { describe } from \"./describe\"",
+			"import { dtsExists } from \"./dtsExists\"",
 			"import { ",
 			"  ${1:${TM_FILENAME_BASE/(.test|.spec)//}} as namedExport,",
 			"  default as $1 ",
@@ -40,17 +54,10 @@
 			"    expected: $1,",
 			"  })",
 			"  ",
-			"  assert({",
-			"    given: 'a module named \"$1\"',",
-			"    should: 'have a \"$1.d.ts\" file',",
-			"    actual: Try(() => statSync(\"./$1.d.ts\").isFile()),",
-			"    expected: true,",
-			"  })",
+			"  assert(dtsExists(import.meta.url, \"$1\"))",
+			"  ",
+			"  assert.fail(\"No Functionality Tests\")",
 			"})",
-			"",
-			"describe('$1 functionality', async assert => {",
-			"  $0${2:throw new Error(\"No Functionality Tests\")}",
-			"})"
 		]
 	}
 }

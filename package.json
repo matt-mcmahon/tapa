@@ -9,7 +9,8 @@
     "chokidar": "^3.0.0",
     "deep-equal": "^1.0.1",
     "esm": "^3.2.25",
-    "pretty-error": "^2.1.1"
+    "pretty-error": "^2.1.1",
+    "ramda": "^0.26.1"
   },
   "description": "An experiment in more function testing.",
   "devDependencies": {
@@ -39,5 +40,6 @@
     "test": "node -r esm ./scripts/run-tests.js",
     "watch": "node -r esm ./scripts/watch-tests.js"
   },
+  "types": "source/index.d.ts",
   "version": "0.7.0"
 }
