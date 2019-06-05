@@ -1,3 +1,7 @@
+# Package Locks: I'm using linking for packages, so these files are not
+# dependable.
+pnpm-lock.yaml
+
 # Logs
 logs
 *.log
@@ -56,4 +60,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
