@@ -1,66 +1,67 @@
-import { strict as assert } from "assert"
+import deepEqual from "deep-equal"
+import { captureStack } from "../capture-stack"
+import { print } from "./print"
 
-const maxLength = 80
-const leftPad = 10
-
-const pad = (char = "-", length = maxLength) =>
-  `${"".padEnd(length, char)}`
-
-const captureStack = ref => {
-  const cwd = process.cwd()
-  const e = {}
-  Error.captureStackTrace(e, ref)
-  return e.stack
-    .split("\n")
-    .map(
-      s => `${pad(" ", leftPad)}${s.trim()}` //.slice(0, maxLength)
-    )
-    .join("\n")
+const pass = () => {
+  return { pass: true }
 }
 
-const pass = (status, message) => {
-  status.pass++
-  console.log(`     ok : ${message}`)
+const fail = () => {
+  return {
+    fail: true,
+    stack: captureStack(describe),
+  }
 }
 
-const fail = (status, err) => {
+const update = status => invariant => {
   status.total++
-  status.fail++
-  console.log(
-    ` not ok : ${err.message} ${err.code}\n${captureStack(
-      describe
-    )}`
-  )
+
+  invariant.result.fail === true && status.fail++
+  invariant.result.pass === true && status.pass++
+  status.invariants.push(invariant)
+
+  return status
 }
 
-const makeAssert = status => ({
+const makeAssert = update => ({
   given,
   should,
   actual,
   expected,
+  ...rest
 }) => {
-  const message = `given ${given}; should ${should}`
-  try {
-    assert.deepStrictEqual(actual, expected, message)
-    pass(status, message)
-  } catch (err) {
-    fail(status, err)
-  }
-}
+  const result = deepEqual(actual, expected)
+    ? pass()
+    : fail()
 
-const describe = (description, plan) => {
-  console.log(`${pad("=")}\n${description}\n${pad("-")}\n`)
-  const status = { total: 0, pass: 0, fail: 0 }
-  const assert = makeAssert(status)
-  assert.pass = message => pass(status, message)
-  assert.fail = message => fail(status, Error(message))
-
-  plan(assert)
-  console.log(
-    `\n${pad()}\nTotal ${status.total}     Pass ${
-      status.pass
-    }     Fail ${status.fail}\n${pad("=")}\n`
+  update(
+    Object.freeze({
+      ...rest, // spread first so we overwrite
+      given,
+      should,
+      message: `given ${given}; should ${should}`,
+      actual,
+      expected,
+      result,
+    })
   )
 }
 
-export { describe }
+const describe = async (description, plan) => {
+  const status = {
+    description,
+    total: 0,
+    pass: 0,
+    fail: 0,
+    invariants: [],
+  }
+  const assert = makeAssert(update(status))
+  assert.pass = message => pass(status, message)
+  assert.fail = message => fail(status, Error(message))
+
+  await plan(assert)
+
+  print(status)
+}
+
+export { describe, describe as default }

@@ -1,7 +1,7 @@
 "use strict"
 
 const PrettyError = require("pretty-error")
-const { pipe } = require("@mwm/functional")
+const { pipe } = require("ramda")
 
 const icons = require("../icons")
 

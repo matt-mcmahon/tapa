@@ -6,7 +6,7 @@ const {
   both,
   always,
   defaultTo,
-} = require("@mwm/functional")
+} = require("ramda")
 
 const message = ifElse(
   has("message"),

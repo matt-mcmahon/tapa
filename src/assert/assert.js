@@ -6,7 +6,7 @@ const {
   pipe,
   tap,
   bind,
-} = require("@mwm/functional")
+} = require("ramda")
 
 const { invariant } = require("../invariant")
 

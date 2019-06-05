@@ -1,9 +1,9 @@
 "use strict"
 
 const { inspect } = require("util")
-const test = require("../node-assert")
+const test = require("../describe")
 
-const { has, equals, F } = require("@mwm/functional")
+const { has, equals, F } = require("ramda")
 
 const mockPlan = []
 

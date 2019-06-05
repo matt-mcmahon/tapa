@@ -1,5 +1,9 @@
 /**
- * Document your function signatures in a module-specific `*.d.ts` file like
- * this one, or in the global `../index.d.ts` file, but not both.
+ * __describe__&shy;s a test specification.
  */
-export const describe: () => void
+export declare const describe: (
+  description: string,
+  plan: Plan
+) => void
+
+type Plan = (assert: Function) => void

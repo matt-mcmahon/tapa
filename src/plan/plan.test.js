@@ -1,16 +1,16 @@
-'use strict'
+"use strict"
 
-const nodeAssert = require('../node-assert')
-const { of: plan } = require('./plan')
+const nodeAssert = require("../describe")
+const { of: plan } = require("./plan")
 
-const description = 'Test Plan'
+const description = "Test Plan"
 
 const T = () => true
 
 const test = plan(description, tapaAssert => {
-  tapaAssert({ message: 'test 1', predicate: T })
-  tapaAssert({ message: 'test 2', predicate: T })
-  tapaAssert({ message: 'test 3', predicate: T })
+  tapaAssert({ message: "test 1", predicate: T })
+  tapaAssert({ message: "test 2", predicate: T })
+  tapaAssert({ message: "test 3", predicate: T })
 })
 
 nodeAssert(

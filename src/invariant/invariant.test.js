@@ -1,6 +1,6 @@
-import test from "../node-assert/index.js"
+import { describe as test } from "../describe/index.js"
 import { invariant } from "./invariant.js"
-import { T } from "@mwm/functional"
+import { T } from "ramda"
 
 test(
   __filename,

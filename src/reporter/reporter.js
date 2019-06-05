@@ -6,7 +6,7 @@ const {
   ifElse,
   flatten,
   has,
-} = require("@mwm/functional")
+} = require("ramda")
 const icons = require("../icons")
 
 const {
