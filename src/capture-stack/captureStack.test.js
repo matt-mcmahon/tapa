@@ -11,10 +11,17 @@ describe("includes()", async assert => {
   const line = "foo bar baz"
 
   assert({
-    given: 'stack with "node_modules"',
-    should: 'remove lines with "node_modules"',
+    given: `line "${line}" without "box"`,
+    should: "return false",
     expected: false,
     actual: includes(["box"], line),
+  })
+
+  assert({
+    given: `line "${line}" with "bar"`,
+    should: "return true",
+    expected: true,
+    actual: includes(["bar"], line),
   })
 })
 

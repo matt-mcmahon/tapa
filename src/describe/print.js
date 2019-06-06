@@ -1,86 +1,137 @@
-import R from "ramda"
+import {
+  pipe,
+  trim,
+  last,
+  slice,
+  map,
+  blackbird,
+  head,
+} from "@mwm/functional"
 
-const maxLength = 80
+import { inspect } from "util"
 
-const width = 9
-
-const indentWith = char =>
-  R.pipe(
-    R.trim,
-    s => `${char} ${s}`,
-    s => s.padStart(width, " ")
-  )
-
-export const first = R.pipe(
-  R.slice(0, 1),
-  R.map(indentWith("> "))
-)
-
-export const body = R.pipe(
-  R.slice(1, -1),
-  R.map(indentWith("| "))
-)
-
-export const last = R.pipe(
-  R.slice(-1, Infinity),
-  R.map(indentWith("- "))
-)
-
-export const indent = message => {
-  message
-    .split("\n")
-    .map(
-      converge((first, body, last) => [
-        first,
-        ...body,
-        last,
-      ]),
-      [first, body, last]
-    )
-    .join("\n")
-}
-
-export const repeat = (char = "-", length = maxLength) =>
+export const printLine = (char = "─", length = 80) =>
   `${"".padEnd(length, char)}`
 
-export const header = ({ description }) =>
-  ["", "", repeat("="), description, repeat("-"), ""].join(
-    "\n"
+export const header = ({ description }) => [
+  "",
+  "",
+  printLine("━"),
+  description,
+  printLine(),
+  "",
+]
+
+export const footer = ({ total, pass, fail }) => [
+  "",
+  printLine(),
+  `Total ${total}     Pass ${pass}     Fail ${fail}`,
+  printLine("━"),
+  "",
+  "",
+]
+
+const ifFail = (failMessage, leftPadding) => ({
+  message,
+  stack,
+  actual,
+  expected,
+}) => {
+  const width = 8
+
+  const prepend = pre => post => "" + pre + post
+  const append = post => pre => "" + pre + post
+
+  const i = v =>
+    inspect(v, {
+      colors: true,
+      depth: 2,
+      breakLength: 80 - width,
+    })
+
+  const start = pipe(
+    head,
+    trim,
+    prepend(failMessage),
+    append(`: ${message}`),
+    s => [
+      "",
+      s,
+      leftPadding + "│",
+      leftPadding + `├╴ actual: ${i(actual)}`,
+      leftPadding + "│",
+      leftPadding + `├╴ expected: ${i(expected)}`,
+      leftPadding + "│",
+      leftPadding + `├╴ stack:`,
+    ]
   )
 
-export const footer = ({ total, pass, fail }) =>
-  [
-    "",
-    repeat("-"),
-    `Total ${total}     Pass ${pass}     Fail ${fail}`,
-    repeat("="),
-    "",
-    "",
-  ].join("\n")
+  const middle = pipe(
+    slice(1)(-1),
+    map(
+      pipe(
+        trim,
+        prepend(leftPadding + "├────╴ ")
+      )
+    )
+  )
 
-export const print = ({
-  description,
-  total,
-  pass,
-  fail,
-  invariants,
-}) => {
-  console.log(
-    header({ description }),
-    invariants
-      .map(invariant => {
-        const { message, stack, pass, fail } = invariant
-        if (pass === true) {
-          return `      ok : ${message}`
-        } else if (fail === true) {
-          return `  not ok : ${message}\n${indent(stack)}`
-        } else {
-          return ` pending : ${message}`
-        }
-      })
-      .join("\n"),
-    footer({ total, pass, fail })
+  const end = pipe(
+    last,
+    trim,
+    prepend(leftPadding + "└────╴ "),
+    v => [v, ""]
+  )
+
+  const indent = pipe(
+    s => s.split("\n"),
+    blackbird((start, middle, end) => [
+      ...start,
+      ...middle,
+      ...end,
+    ])(start, middle, end)
+  )
+
+  return indent(stack)
+}
+
+const ifPass = passMessage => ({ pass, message }) => {
+  return pass === true ? [passMessage + message] : false
+}
+
+const ifPend = pendMessage => ({ pass, fail, message }) => {
+  return pass !== true && fial !== true
+    ? [pendMessage + message]
+    : false
+}
+
+const invariantToStringArray = invariant => {
+  const passMessage = "ok      ╶╴ "
+  const failMessage = "not ok  ┌╴ "
+  const pendMessage = "pending ╶╴ "
+  const leftPadding = "        "
+
+  return (
+    ifPass(passMessage, leftPadding)(invariant) ||
+    ifFail(failMessage, leftPadding)(invariant) ||
+    ifPend(pendMessage, leftPadding)(invariant)
   )
 }
 
-export default print
+const flatten = v => {
+  return [].concat(...v)
+}
+
+const print = plan => {
+  console.log(
+    [
+      ...header(plan),
+      ...flatten(
+        plan.invariants.map(invariantToStringArray)
+      ),
+      ...footer(plan),
+    ].join("\n")
+  )
+}
+
+export { print, print as default }

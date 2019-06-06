@@ -15,12 +15,9 @@ const fail = () => {
 
 const update = status => invariant => {
   status.total++
-
-  invariant.result.fail === true && status.fail++
-  invariant.result.pass === true && status.pass++
+  invariant.fail === true && status.fail++
+  invariant.pass === true && status.pass++
   status.invariants.push(invariant)
-
-  return status
 }
 
 const makeAssert = update => ({
@@ -34,17 +31,16 @@ const makeAssert = update => ({
     ? pass()
     : fail()
 
-  update(
-    Object.freeze({
-      ...rest, // spread first so we overwrite
-      given,
-      should,
-      message: `given ${given}; should ${should}`,
-      actual,
-      expected,
-      result,
-    })
-  )
+  const invariant = {
+    ...rest, // spread first so we overwrite
+    given,
+    should,
+    message: `given ${given}; should ${should}`,
+    actual,
+    expected,
+    ...result, // result overwrites rest
+  }
+  update(invariant)
 }
 
 const describe = async (description, plan) => {
@@ -55,9 +51,10 @@ const describe = async (description, plan) => {
     fail: 0,
     invariants: [],
   }
-  const assert = makeAssert(update(status))
-  assert.pass = message => pass(status, message)
-  assert.fail = message => fail(status, Error(message))
+  const updater = update(status)
+  const assert = makeAssert(updater)
+  assert.pass = message => updater({ message, ...pass() })
+  assert.fail = message => updater({ message, ...fail() })
 
   await plan(assert)
 
