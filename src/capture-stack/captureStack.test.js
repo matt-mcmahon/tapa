@@ -1,31 +1,67 @@
-import { describe, dtsExists } from "../describe"
 import { fileURLToPath } from "url"
+import { iife } from "@mwm/functional"
+
+import { describe, dtsExists } from "../describe"
+import { captureStack as indexExport } from "."
 import {
-  includes,
+  parseLine,
+  keep,
+  truncate,
+  capture,
   captureStack as namedExport,
   default as captureStack,
 } from "./captureStack"
-import { captureStack as indexExport } from "."
 
-describe("includes()", async assert => {
-  const line = "foo bar baz"
+const line = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
+const parsedLine = {
+  column: "11",
+  filename: "captureStack.js",
+  line:
+    "  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
+  method: "captureStack",
+  path: "w:@mwm\tapasrccapture-stackcaptureStack.js:11:9",
+  row: "9",
+}
 
+describe("capture-stack/split-line", async assert => {
   assert({
-    given: `line "${line}" without "box"`,
-    should: "return false",
-    expected: false,
-    actual: includes(["box"], line),
-  })
-
-  assert({
-    given: `line "${line}" with "bar"`,
-    should: "return true",
-    expected: true,
-    actual: includes(["bar"], line),
+    given: `the line ${line}`,
+    should: "parse",
+    expected: parsedLine,
+    actual: parseLine(line),
   })
 })
 
-describe("captureStack module", async assert => {
+describe("capture-stack/keep", async assert => {
+  assert({
+    given: `parsedLine.path = "${
+      parsedLine.path
+    }" and filter ["not-found"]`,
+    should: "return true",
+    expected: true,
+    actual: keep(["not-found"])(line),
+  })
+
+  assert({
+    given: `parsedLine.path = "${
+      parsedLine.path
+    }" and filter ["capture-stack"]`,
+    should: "return false",
+    expected: false,
+    actual: keep(["capture-stack"])(line),
+  })
+
+  assert({
+    given: `parsedLine.path = "${
+      parsedLine.path
+    }" and filter ["not-found", "capture-stack"]`,
+    should: "return false",
+    expected: false,
+    actual: keep(["not-found", "capture-stack"])(line),
+  })
+})
+
+describe("capture-stack", async assert => {
   const capturedStack = `
 Error
   at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)
@@ -38,6 +74,7 @@ Error
   at Object.u (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287740)
   at Object.o (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287137)
   at Object.<anonymous> (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879)
+  at W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879
     `.trim()
 
   const filteredStack = `

@@ -83,14 +83,11 @@ const ifFail = (failMessage, leftPadding) => ({
     v => [v, ""]
   )
 
-  const indent = pipe(
-    s => s.split("\n"),
-    blackbird((start, middle, end) => [
-      ...start,
-      ...middle,
-      ...end,
-    ])(start, middle, end)
-  )
+  const indent = blackbird((start, middle, end) => [
+    ...start,
+    ...middle,
+    ...end,
+  ])(start, middle, end)
 
   return indent(stack)
 }
