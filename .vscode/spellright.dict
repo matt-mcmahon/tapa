@@ -3,3 +3,5 @@ ts
 eslint
 esm
 ramda
+dtsExists
+ts
