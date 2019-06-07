@@ -43,7 +43,7 @@ const makeAssert = update => ({
   update(invariant)
 }
 
-const describe = async (description, plan) => {
+const describe = (description, plan) => {
   const status = {
     description,
     total: 0,
@@ -56,9 +56,18 @@ const describe = async (description, plan) => {
   assert.pass = message => updater({ message, ...pass() })
   assert.fail = message => updater({ message, ...fail() })
 
-  await plan(assert)
+  const result = plan(assert)
 
-  print(status)
+  return Promise.resolve(result)
+    .catch(err => updater({ fail: err }))
+    .finally(print(status))
 }
 
-export { describe, describe as default }
+export {
+  describe as default,
+  describe,
+  fail,
+  makeAssert,
+  pass,
+  update,
+}

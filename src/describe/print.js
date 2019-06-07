@@ -70,6 +70,7 @@ const ifFail = (failMessage, leftPadding) => ({
     slice(1)(-1),
     map(
       pipe(
+        o => String(o),
         trim,
         prepend(leftPadding + "├────╴ ")
       )
@@ -119,16 +120,17 @@ const flatten = v => {
   return [].concat(...v)
 }
 
+const pause = v => {
+  return v
+}
+
 const print = plan => {
-  console.log(
-    [
-      ...header(plan),
-      ...flatten(
-        plan.invariants.map(invariantToStringArray)
-      ),
-      ...footer(plan),
-    ].join("\n")
-  )
+  const invariants = { plan }
+  return [
+    ...header(plan),
+    ...flatten(invariants.map(invariantToStringArray)),
+    ...footer(plan),
+  ].join("\n")
 }
 
 export { print, print as default }
