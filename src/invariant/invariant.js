@@ -6,17 +6,18 @@ const invariant = ({
   actual,
   expected,
   ...rest
-}) => {
-  const i = {
+}) =>
+  Object.freeze({
     ...rest,
     given,
     should,
     actual,
     expected,
-    result: deepEqual(actual, expected),
+    get result() {
+      return deepEqual(actual, expected)
+    },
     message: `given ${given}; should ${should}`,
     of: invariant,
-  }
-}
+  })
 
 export { invariant, invariant as default }
