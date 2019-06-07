@@ -1,79 +1,73 @@
-"use strict"
-
-const {
+import {
   assoc,
   clone,
   pipe,
   tap,
   bind,
-} = require("ramda")
+} from "@mwm/functional"
 
-const { invariant } = require("../invariant")
+import processArgument from "./process-argument"
 
-const assocStack = constructor => obj => {
-  const stack = clone(obj)
-  Error.captureStackTrace(stack, constructor)
-  Object.defineProperty(stack, "stack", {
-    enumerable: true,
-  })
-  return invariant(stack)
-}
+import { invariant } from "../invariant"
 
-const processArgument = require("./process-argument")
+import { captureStack } from "../capture-stack"
 
-const Assert = plan => {
-  const append = tap(bind(plan.push, plan))
+const assocStack = constructor => value => ({
+  ...value,
+  stack: captureStack(constructor),
+})
 
-  const assert = invariantOptions => {
-    return pipe(
-      processArgument,
-      assocStack(assert),
-      append
-    )(invariantOptions)
+class Assert {
+  constructor(plan) {
+    const append = tap(bind(plan.push, plan))
+
+    const assert = invariantOptions => {
+      return pipe(
+        processArgument,
+        assocStack(assert),
+        invariant,
+        append
+      )(invariantOptions)
+    }
+
+    const fails = invariantOptions => {
+      return pipe(
+        processArgument,
+        assoc("fails", true),
+        assocStack(fails),
+        append
+      )(invariantOptions)
+    }
+
+    const skip = invariantOptions => {
+      return pipe(
+        processArgument,
+        assoc("skip", true),
+        assocStack(skip),
+        append
+      )(invariantOptions)
+    }
+
+    const comment = message => {
+      return pipe(
+        processArgument,
+        assoc("skip", true),
+        assocStack(comment),
+        append
+      )({
+        message: message,
+      })
+    }
+
+    assert.fails = fails
+    assert.skip = skip
+    assert.comment = comment
+
+    return assert
   }
-
-  const fails = invariantOptions => {
-    return pipe(
-      processArgument,
-      assoc("fails", true),
-      assocStack(fails),
-      append
-    )(invariantOptions)
-  }
-
-  const skip = invariantOptions => {
-    return pipe(
-      processArgument,
-      assoc("skip", true),
-      assocStack(skip),
-      append
-    )(invariantOptions)
-  }
-
-  const comment = message => {
-    return pipe(
-      processArgument,
-      assoc("skip", true),
-      assocStack(comment),
-      append
-    )({
-      message: message,
-    })
-  }
-
-  assert.fails = fails
-  assert.skip = skip
-  assert.comment = comment
-
-  Object.defineProperties(assert, {
-    constructor: {
-      value: Assert,
-    },
-  })
-
-  return assert
 }
 
 Assert.of = plan => Assert(plan)
+const assert = Assert.of
 
-module.exports = Assert
+export { assert, Assert, Assert as default }

@@ -1,13 +1,10 @@
-"use strict"
+import { inspect } from "util"
+import { has, equals, F } from "@mwm/functional"
 
-const { inspect } = require("util")
-const test = require("../describe")
-
-const { has, equals, F } = require("ramda")
+import test from "../describe"
+import tapaAssert, { of } from "./assert"
 
 const mockPlan = []
-
-const tapaAssert = require("./assert")
 
 test(
   __filename,
@@ -19,12 +16,12 @@ test(
   },
   t => {
     const expected = "function"
-    const actual = typeof tapaAssert.of
+    const actual = typeof of
     const message = `tapaAssert should have an "of" method`
     t.deepEqual(actual, expected, message)
   },
   t => {
-    const tapa = tapaAssert.of(mockPlan)
+    const tapa = of(mockPlan)
 
     tapa.comment(
       "next assert should pass using default message"
