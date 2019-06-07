@@ -1,8 +1,6 @@
 import { fileURLToPath } from "url"
-import { iife } from "@mwm/functional"
+import { describe } from "riteway"
 
-import { describe, dtsExists } from "../describe"
-import { captureStack as indexExport } from "."
 import {
   parseLine,
   keep,
@@ -10,26 +8,56 @@ import {
   capture,
   captureStack as namedExport,
   default as captureStack,
-} from "./captureStack"
+} from "./captureStack.js"
+import { captureStack as indexExport } from "./captureStack"
+
+describe("capture-stack exports", async assert => {
+  assert({
+    given: 'a module named "./captureStack.js"',
+    should: "have a default export",
+    actual: typeof captureStack,
+    expected: "function",
+  })
+
+  assert({
+    given:
+      'import { captureStack as namedExport } from "./captureStack.js"',
+    should: "be identical to default export",
+    actual: namedExport,
+    expected: captureStack,
+  })
+
+  assert({
+    should: "be identical to default export",
+    actual: indexExport,
+    expected: captureStack,
+  })
+})
 
 const line = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
 const parsedLine = {
-  column: "11",
+  line,
+  column: 11,
   filename: "captureStack.js",
-  line:
-    "  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
   method: "captureStack",
-  path: "w:@mwm\tapasrccapture-stackcaptureStack.js:11:9",
-  row: "9",
+  path:
+    "w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9",
+  row: 9,
 }
 
 describe("capture-stack/split-line", async assert => {
-  assert({
-    given: `the line ${line}`,
-    should: "parse",
-    expected: parsedLine,
-    actual: parseLine(line),
-  })
+  {
+    const given = `the line ${line}`
+    const should = "parse"
+    const expected = parsedLine
+    const actual = parseLine(line)
+    assert({
+      given,
+      should,
+      expected,
+      actual,
+    })
+  }
 })
 
 describe("capture-stack/keep", async assert => {
@@ -86,43 +114,20 @@ Error
   at Generator.next (<anonymous>)
     `.trim()
 
-  assert({
-    given: 'a module named "./captureStack.js"',
-    should: "have a default export",
-    actual: typeof captureStack,
-    expected: "function",
-  })
-
-  assert({
-    given:
-      'import { captureStack as namedExport } from "./captureStack.js"',
-    should: "be identical to default export",
-    actual: namedExport,
-    expected: captureStack,
-  })
-
-  assert({
-    should: "be identical to default export",
-    actual: indexExport,
-    expected: captureStack,
-  })
-
-  assert(dtsExists(import.meta.url, "captureStack"))
-
-  const stack = captureStack(describe)
+  const stack = captureStack()
 
   assert({
     given: `captureStack()`,
     should: `return a string`,
-    actual: typeof captureStack(),
+    actual: typeof stack,
     expected: "string",
   })
 
   {
     const expected = true
-    const actual = stack.length > 1
-    const given = ""
-    const should = `it's length should be greater than 1, not ${actual}`
+    const actual = stack.length > 0
+    const given = "a stack"
+    const should = `have a stack.length > 0`
     assert({ given, should, actual, expected })
   }
 
@@ -130,8 +135,8 @@ Error
     const file = fileURLToPath(import.meta.url)
     const actual = stack.includes(file)
     const expected = true
-    const given = "stack trace"
-    const should = `should include "${file}" path`
+    const given = "real stack trace"
+    const should = `include path for this file`
     assert({ given, should, actual, expected })
   }
 })

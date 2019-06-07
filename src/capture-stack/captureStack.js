@@ -1,8 +1,4 @@
-import { pipe, not } from "@mwm/functional"
-
-/*
-  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)
-*/
+import { pipe, not, split, map } from "@mwm/functional"
 
 const methodRe = () => {
   const openParen = `\\(*`
@@ -24,10 +20,6 @@ const methodRe = () => {
   return new RegExp(pattern, "i")
 }
 
-/* example line and paths
-w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9
-/@mwm/tapa/src/capture-stack/captureStack.js:11:9
-*/
 const pathRe = () => {
   const slash = `[\\\\/]`
   const notSlash = `[^\\\\/]`
@@ -55,15 +47,18 @@ const pathRe = () => {
 
 const parseLine = line => {
   const p = pathRe()
-  const [, method, path] = line.match(methodRe())
-  const [, filename, column, row] = path.match(p)
+  const [, method, path] =
+    (line && line.match(methodRe())) || []
+  const [, filename, column, row] =
+    (path && path.match(p)) || []
 
   return {
+    line,
     method,
     path,
     filename,
-    row,
-    column,
+    row: parseInt(row, 10),
+    column: parseInt(column, 10),
   }
 }
 
@@ -76,28 +71,41 @@ const keep = terms => line =>
 const capture = above => {
   const e = {}
   Error.captureStackTrace(e, above)
-  return e.stack.split("\n")
+  return e.stack
 }
 
 const truncate = line => line.replace(process.cwd(), "")
 
-const captureStack = (
-  above,
-  {
-    filter = [
-      "node_modules",
-      "at Generator.next (<anonymous>)",
-    ],
-  } = {}
-) => capture(above).map(parseLine)
-// .map(keep(filter))
-// .map(truncate)
+const pause = message => value => {
+  message
+  return value
+}
+
+const parseError = error => parseStack(error.stack)
+
+const parseStack = pipe(
+  split("\n"),
+  // pause("parseStack"),
+  map(parseLine)
+  // pause("parseStack")
+  // map(keep(filter)),
+  // pause("parseStack")
+  // map(truncate)
+)
+
+const captureStack = pipe(
+  capture,
+  pause("captureStack"),
+  parseStack,
+  pause("captureStack")
+)
 
 export {
   parseLine,
   keep,
   truncate,
   capture,
+  parseError,
   captureStack,
   captureStack as default,
 }
