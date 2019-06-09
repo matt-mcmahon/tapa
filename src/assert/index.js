@@ -1,7 +1,1 @@
-'use strict'
-
-const assert = require('./assert')
-
-module.exports = {
-  assert, Assert: assert
-}
+export { assert } from "./assert"

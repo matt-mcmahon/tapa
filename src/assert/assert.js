@@ -8,8 +8,6 @@ import {
 
 import processArgument from "./process-argument"
 
-import { invariant } from "../invariant"
-
 import { captureStack } from "../capture-stack"
 
 const assocStack = constructor => value => ({
@@ -21,13 +19,13 @@ class Assert {
   constructor(plan) {
     const append = tap(bind(plan.push, plan))
 
-    const assert = invariantOptions => {
+    const assert = invariant => {
       return pipe(
         processArgument,
         assocStack(assert),
         invariant,
         append
-      )(invariantOptions)
+      )(invariant)
     }
 
     const fails = invariantOptions => {
@@ -70,4 +68,4 @@ class Assert {
 Assert.of = plan => Assert(plan)
 const assert = Assert.of
 
-export { assert, Assert, Assert as default }
+export { Assert, assert, assert as default }

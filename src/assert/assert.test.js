@@ -1,130 +1,31 @@
-import { inspect } from "util"
-import { has, equals, F } from "@mwm/functional"
+import { describe } from "riteway"
+import {
+  assert as namedExport,
+  default as tapaAssert,
+} from "./assert.js"
+import { assert as indexExport } from "."
 
-import test from "../describe"
-import tapaAssert, { of } from "./assert"
+describe("assert module", async assert => {
+  assert({
+    given: 'a module named "./assert.js"',
+    should: "have a default export",
+    actual: typeof tapaAssert,
+    expected: "function",
+  })
 
-const mockPlan = []
+  assert({
+    given:
+      'import { assert as namedExport } from "./assert.js"',
+    should: "be identical to default export",
+    actual: namedExport,
+    expected: tapaAssert,
+  })
 
-test(
-  __filename,
-  t => {
-    const expected = "function"
-    const actual = typeof tapaAssert
-    const message = `tapaAssert should be a function`
-    t.deepEqual(actual, expected, message)
-  },
-  t => {
-    const expected = "function"
-    const actual = typeof of
-    const message = `tapaAssert should have an "of" method`
-    t.deepEqual(actual, expected, message)
-  },
-  t => {
-    const tapa = of(mockPlan)
+  assert({
+    should: "be identical to default export",
+    actual: indexExport,
+    expected: tapaAssert,
+  })
 
-    tapa.comment(
-      "next assert should pass using default message"
-    )
-
-    tapa({
-      expected: 1,
-      actual: 1,
-    })
-
-    tapa({
-      message: `this invariant will fail, but the assertion should pass`,
-      predicate: F,
-    })
-
-    tapa({
-      message: `should pass because it's something`,
-      actual: "something",
-    })
-
-    tapa({
-      message: `should fail because it's nothing`,
-      actual: [],
-    })
-
-    tapa.fails({
-      message: `should fail because it's nothing, but will report as passing`,
-      actual: [],
-    })
-
-    tapa({
-      message: `empty string is empty`,
-      actual: "",
-    })
-
-    tapa({
-      message: `"full" string is NOT empty`,
-      actual: "full",
-    })
-
-    tapa({
-      message: `1 should equal 1, using implied predicate`,
-      expected: 1,
-      actual: 1,
-    })
-
-    tapa({
-      message: `1 should equal 1, using explicit predicate`,
-      predicate: equals,
-      expected: 1,
-      actual: 1,
-    })
-
-    tapa({
-      message: `1 should NOT equal 2, using implied predicate`,
-      expected: 2,
-      actual: 1,
-    })
-
-    tapa({
-      message: `1 should NOT equal 2, using explicit predicate`,
-      predicate: equals,
-      expected: 2,
-      actual: 1,
-    })
-
-    tapa(function shouldAcceptFunctions() {
-      return true
-    })
-
-    const expected = 13
-    const actual = mockPlan.length
-    const message = `plan.length should be ${expected} not ${actual}`
-    t.deepEqual(actual, expected, message)
-  },
-  t => {
-    const expected = [7, 5, 1]
-
-    const actual = mockPlan.reduce(
-      ([pass, fail, skip], i) => {
-        t.ok(
-          has("stack", i),
-          'should have own property "stack"'
-        )
-        t.ok(
-          i.stack.length > 0,
-          "stack length should be > 0"
-        )
-        return i
-          .run()
-          .cata(
-            () => [pass, fail + 1, skip],
-            v =>
-              v.skip
-                ? [pass, fail, skip + 1]
-                : [pass + 1, fail, skip]
-          )
-      },
-      [0, 0, 0]
-    )
-    const message = `result should be ${inspect(
-      expected
-    )}, not ${inspect(actual)}`
-    t.deepEqual(actual, expected, message)
-  }
-)
+  assert.end()
+})
