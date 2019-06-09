@@ -1,4 +1,5 @@
 import deepEqual from "deep-equal"
+
 import { captureStack } from "../capture-stack"
 import { print } from "./print"
 

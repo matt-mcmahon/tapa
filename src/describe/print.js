@@ -125,7 +125,7 @@ const pause = v => {
 }
 
 const print = plan => {
-  const invariants = { plan }
+  const { invariants } = plan
   return [
     ...header(plan),
     ...flatten(invariants.map(invariantToStringArray)),
