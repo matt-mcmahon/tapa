@@ -1,18 +1,19 @@
 import { normalize } from "path"
 import {
-  pipe,
-  not,
-  split,
-  map,
-  tail,
   head,
-  ifElse,
-  defaultTo,
+  map,
+  not,
+  pipe,
   prop,
-  identity,
+  split,
+  tail,
+  blackbird,
+  filter,
+  trim,
+  iife,
 } from "@mwm/functional"
 
-const methodRe = () => {
+const getMethodRe = () => {
   const openParen = `\\(*`
   const closeParen = `\\)*`
   const notParen = `[^${openParen}${closeParen}]`
@@ -32,7 +33,7 @@ const methodRe = () => {
   return new RegExp(pattern, "i")
 }
 
-const pathRe = () => {
+const getPathRe = () => {
   const slash = `[\\\\/]`
   const notSlash = `[^\\\\/]`
   const folder = `${notSlash}+${slash}+`
@@ -57,35 +58,41 @@ const pathRe = () => {
   return new RegExp(pattern, "i")
 }
 
-const parsePath = (path = "") => {
-  const [, filename, column, row] = path.match(
-    pathRe()
-  ) || [, "", NaN, NaN]
+const parseLine = iife(
+  (methodRe, pathRe) => line => {
+    const parsePath = (path = "") => {
+      const [, filename, column, row] = path.match(
+        pathRe
+      ) || [, "", NaN, NaN]
 
-  return {
-    path: normalize(path),
-    filename,
-    column: parseInt(column, 10),
-    row: parseInt(row, 10),
-  }
-}
+      return {
+        path: normalize(path),
+        filename,
+        column: parseInt(column, 10),
+        row: parseInt(row, 10),
+      }
+    }
 
-const parseLine = line => {
-  const [, method, path] =
-    (line && line.match(methodRe())) || []
+    const [, method, path] =
+      (line && line.match(methodRe)) || []
 
-  return {
-    line,
-    method,
-    ...parsePath(path),
-  }
-}
+    return {
+      line,
+      method,
+      ...parsePath(path),
+    }
+  },
+  getMethodRe(),
+  getPathRe()
+)
 
-const keep = (excludeFolders = []) => ({ path = "" }) =>
-  excludeFolders.reduce(
-    (keep, folder) => keep && not(path.includes(folder)),
+const keep = line => {
+  const excludeFolders = ["node_modules"]
+  return excludeFolders.reduce(
+    (keep, folder) => keep && not(line.includes(folder)),
     true
   )
+}
 
 const truncate = line => line.replace(process.cwd(), "")
 
@@ -94,67 +101,53 @@ const pause = message => value => {
   return value
 }
 
-const toStack = stack => {
-  const message = head(stack).line.trim()
-  const lines = tail(stack)
-  const includes = path =>
-    lines.find(line => line.path.includes(path)) !==
-    undefined
+const getHead = pipe(
+  head,
+  prop("line"),
+  trim
+)
 
-  return Object.defineProperties(
-    {
-      message,
-      lines: lines,
-    },
-    {
-      length: {
-        get: () => lines.length,
+const getTail = pipe(
+  tail,
+  pause("getTail -> keep"),
+  filter(keep),
+  map(truncate),
+  map(parseLine)
+)
+
+const converge = (message, lines) =>
+  Object.freeze(
+    Object.defineProperties(
+      {
+        message,
+        lines: Object.freeze(lines),
       },
-      includes: {
-        value: includes,
-      },
-    }
-  )
-}
-
-/**
- * Given a `flag` and an `action`, __iff__ will apply the action _if and only
- * if_ the flag is true.
- *
- * @param {boolean} flag apply action if true
- * @param {function} action function to apply
- */
-const iff = flag => action =>
-  ifElse(() => !!flag)(action)(identity)
-
-const parseStack = ({
-  excludePaths = ["node_modules"],
-  truncatePaths = true,
-  maxWidth = 80,
-}) =>
-  pipe(
-    split("\n"),
-    map(parseLine),
-    map(keep(excludePaths)),
-    iff(truncatePaths)(map(truncate)),
-    toStack
+      {
+        length: {
+          get: () => lines.length,
+        },
+        includes: {
+          value: path =>
+            lines.find(line => line.path.includes(path)),
+        },
+      }
+    )
   )
 
-const parseError = ({ excludePaths }) =>
-  pipe(
-    prop("stack"),
-    parseStack(excludePaths)
-  )
+const parseError = pipe(
+  prop("stack"),
+  split("\n"),
+  blackbird(converge)(getHead, getTail)
+)
 
-const captureStack = ({ excludePaths }) =>
-  pipe(
-    above => {
-      const e = {}
-      Error.captureStackTrace(e, above)
-      return e.stack
-    },
-    parseStack(excludePaths)
-  )
+const captureStack = pipe(
+  above => {
+    const e = {}
+    Error.captureStackTrace(e, above)
+    return e
+  },
+  parseError
+)
 
 export {
   parseLine,
@@ -162,5 +155,4 @@ export {
   truncate,
   parseError,
   captureStack,
-  captureStack as default,
 }

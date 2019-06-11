@@ -4,16 +4,16 @@ import { describe } from "riteway"
 import {
   parseLine,
   keep,
-  captureStack as namedExport,
-  default as captureStack,
+  captureStack,
   parseError,
 } from "./captureStack.js"
-import { captureStack as indexExport } from "./captureStack"
+import { captureStack as indexExport } from "."
+import { inspect } from "util"
 
-const line = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
+const exampleLine = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
 
 const parsedLine = {
-  line,
+  line: exampleLine,
   column: 11,
   filename: "captureStack.js",
   method: "captureStack",
@@ -23,74 +23,125 @@ const parsedLine = {
 }
 
 describe("capture-stack exports", async assert => {
-  assert({
-    given: 'a module named "./captureStack.js"',
-    should: "have a default export",
-    actual: typeof captureStack,
-    expected: "function",
-  })
+  {
+    const given = 'a module named "./captureStack.js"'
+    const should = "have a named export"
+    const actual = typeof captureStack
+    const expected = "function"
+    assert({ given, should, actual, expected })
+  }
 
-  assert({
-    given:
-      'import { captureStack as namedExport } from "./captureStack.js"',
-    should: "be identical to default export",
-    actual: namedExport,
-    expected: captureStack,
-  })
-
-  assert({
-    should: "be identical to default export",
-    actual: indexExport,
-    expected: captureStack,
-  })
+  {
+    const given = "an index re-export of captureStack"
+    const should = "be identical to captureStack"
+    const actual = indexExport
+    const expected = captureStack
+    assert({ given, should, actual, expected })
+  }
 })
 
-describe("capture-stack/split-line", async assert => {
+describe("capture-stack/parseLine", async assert => {
   {
-    const given = `the line "${line}"`
-    const should = "parse"
+    const given = `the line ${inspect(exampleLine)}`
+    const should = `parse to ${inspect(parsedLine)}`
     const expected = parsedLine
-    const actual = parseLine(line)
-    assert({
-      given,
-      should,
-      expected,
-      actual,
-    })
+    const actual = parseLine(exampleLine)
+    assert({ given, should, actual, expected })
   }
 })
 
 describe("capture-stack/keep", async assert => {
-  {
-    const given = `parsedLine.path = "${
-      parsedLine.path
-    }" and filter ["not-found"]`
-    const should = "return true"
-    const actual = keep(["not-found"])(line)
-    const expected = true
-    assert({ given, should, expected, actual })
+  const runTest = ([line, expected]) => {
+    const given = inspect(line)
+    const should = expected ? "keep it" : "not keep it"
+    const actual = keep(line)
+    assert({ given, should, actual, expected })
   }
 
-  {
-    const given = `parsedLine.path = "${
-      parsedLine.path
-    }" and filter ["capture-stack"]`
-    const should = "return false"
-    const actual = keep(["capture-stack"])(line)
-    const expected = false
-    assert({ given, should, expected, actual })
+  const lines = [
+    [
+      "  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
+      true,
+    ],
+    [
+      "  at _9c4‍.r.describe (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:41:17)",
+      true,
+    ],
+    [
+      "  at describe (w:\\@mwm\\tapa\\src\\describe\\describe.js:62:9)",
+      true,
+    ],
+    [
+      "  at Object.<anonymous> (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:17:1)",
+      true,
+    ],
+    ["  at Generator.next (<anonymous>)", true],
+    [
+      "  at bl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:245412)",
+      false,
+    ],
+    [
+      "  at kl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:247659)",
+      false,
+    ],
+    [
+      "  at Object.u (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287740)",
+      false,
+    ],
+    [
+      "  at Object.o (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287137)",
+      false,
+    ],
+    [
+      "  at Object.<anonymous> (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879)",
+      false,
+    ],
+    [
+      "  at W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879",
+      false,
+    ],
+  ].forEach(runTest)
+})
+
+describe("capture-stack/parseError", async assert => {
+  const exampleError = {
+    name: "Error",
+    stack: `
+      Error
+        at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)
+        at _9c4‍.r.describe (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:41:17)
+        at describe (w:\\@mwm\\tapa\\src\\describe\\describe.js:62:9)
+        at Object.<anonymous> (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:17:1)
+        at Generator.next (<anonymous>)
+        at bl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:245412)
+        at kl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:247659)
+        at Object.u (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287740)
+        at Object.o (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287137)
+        at Object.<anonymous> (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879)
+        at W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879
+    `.trim(),
   }
 
+  const filepath =
+    "w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js"
+
+  const stack = parseError(exampleError)
+
   {
-    const given = `parsedLine.path = "${
-      parsedLine.path
-    }" and filter ["not-found", "capture-stack"]`
-    const should = "return false"
-    const expected = false
-    const actual = keep(["not-found", "capture-stack"])(
-      line
-    )
-    assert({ given, should, expected, actual })
+    const actual = stack.includes(filepath)
+    const expected = {
+      column: 11,
+      filename: "captureStack.js",
+      line:
+        "        at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
+      method: "captureStack",
+      path:
+        "w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9",
+      row: 9,
+    }
+    const given = "parseError(...)"
+    const should = `include filepath "${filepath}"`
+    assert({ given, should, actual, expected })
   }
 })
 
@@ -110,39 +161,6 @@ describe("capture-stack", async assert => {
     const actual = stack.length > 0
     const given = "a stack"
     const should = `have a stack.length > 0`
-    assert({ given, should, actual, expected })
-  }
-})
-
-describe("capture-stack/parseError", async assert => {
-  const exampleError = {
-    name: "Error",
-    stack: `
-  Error
-  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)
-  at _9c4‍.r.describe (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:41:17)
-  at describe (w:\\@mwm\\tapa\\src\\describe\\describe.js:62:9)
-  at Object.<anonymous> (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.test.js:17:1)
-  at Generator.next (<anonymous>)
-  at bl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:245412)
-  at kl (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:247659)
-  at Object.u (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287740)
-  at Object.o (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:287137)
-  at Object.<anonymous> (W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879)
-  at W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879
-    `.trim(),
-  }
-
-  const filepath =
-    "w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js"
-
-  const stack = parseError(exampleError)
-
-  {
-    const actual = stack.includes(filepath)
-    const expected = true
-    const given = "parseError(...)"
-    const should = `include filepath "${filepath}"`
     assert({ given, should, actual, expected })
   }
 })
