@@ -1,20 +1,25 @@
-import { describe } from "./describe.js"
-import { dtsExists } from "./dtsExists"
+import test from "tape"
+import { describe } from "./describe"
+import { describe as indexExport } from "."
 
-describe("describe module", async assert => {
-  assert({
-    given: 'the module "./describe.js"',
-    should: 'have an export named "describe"',
-    actual: typeof describe,
-    expected: "function",
-  })
+test("describe module", assert => {
+  {
+    const given = 'module named "./describe"'
+    const should = 'have an export named "describe"'
+    const message = `given ${given}; should ${should}`
+    const actual = typeof describe
+    const expected = "function"
+    assert.deepEqual(actual, expected, message)
+  }
 
-  assert({
-    given: `the module "./describe.js"`,
-    should: `have a "./describe.d.ts" file`,
-    actual: dtsExists(import.meta.url, "describe"),
-    expected: true,
-  })
+  {
+    const given = 'index export "./describe"'
+    const should = "be identical to mamed export"
+    const message = `given ${given}; should ${should}`
+    const actual = indexExport
+    const expected = describe
+    assert.deepEqual(actual, expected, message)
+  }
 
-  assert.fail("No Functionality Tests")
+  assert.end()
 })

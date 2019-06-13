@@ -11,6 +11,7 @@ import {
   filter,
   trim,
   iife,
+  defaultTo,
 } from "@mwm/functional"
 
 const getMethodRe = () => {
@@ -41,8 +42,8 @@ const getPathRe = () => {
   const posix = `(?:${slash}+)`
 
   const startLine = `^\\s*`
-  const drive = `(?:${windows}|${posix})`
-  const folders = `(?:${folder})+`
+  const drive = `(${windows}|${posix})`
+  const folders = `((?:${folder})+)`
   const filename = `([^:]+):*`
   const column = `(?:(\\d+)):*`
   const row = `(\\d+)`
@@ -60,27 +61,39 @@ const getPathRe = () => {
 
 const parseLine = iife(
   (methodRe, pathRe) => line => {
-    const parsePath = (path = "") => {
-      const [, filename, column, row] = path.match(
-        pathRe
-      ) || [, "", NaN, NaN]
+    const parsePath = location => {
+      const matches = defaultTo([])(location.match(pathRe))
+      const path = matches[1] + matches[2]
+      const filename = matches[3]
+      const column = defaultTo(undefined)(
+        parseInt(matches && matches[2], 10)
+      )
+      const row = defaultTo(undefined)(
+        parseInt(matches && matches[3], 10)
+      )
+      return { path, filename, column, row }
+    }
 
-      return {
-        path: normalize(path),
-        filename,
-        column: parseInt(column, 10),
-        row: parseInt(row, 10),
+    const parseMethod = line => {
+      const matches = defaultTo([])(line.match(methodRe))
+      const method = matches[1]
+      const location = normalize(defaultTo("")(matches[2]))
+      return { method, location }
+    }
+
+    const { method, location } = parseMethod(line)
+
+    return Object.defineProperty(
+      { line, method, ...parsePath(location) },
+      "toString",
+      {
+        enumerable: false,
+        value: () =>
+          `${method}\n${path}${filename}${
+            column ? column + ":" : ""
+          }${row ? row + ":" : ""}`,
       }
-    }
-
-    const [, method, path] =
-      (line && line.match(methodRe)) || []
-
-    return {
-      line,
-      method,
-      ...parsePath(path),
-    }
+    )
   },
   getMethodRe(),
   getPathRe()
@@ -109,10 +122,10 @@ const getHead = pipe(
 
 const getTail = pipe(
   tail,
-  pause("getTail -> keep"),
   filter(keep),
   map(truncate),
-  map(parseLine)
+  map(parseLine),
+  pause("getTail -> parseLine")
 )
 
 const converge = (message, lines) =>
