@@ -1,13 +1,13 @@
 import deepEqual from "deep-equal"
 
-const invariant = ({
+export const invariant = ({
   given,
   should,
   actual,
   expected,
   ...rest
-}) =>
-  Object.freeze({
+}) => {
+  const i = {
     ...rest,
     given,
     should,
@@ -17,7 +17,7 @@ const invariant = ({
       return deepEqual(actual, expected)
     },
     message: `given ${given}; should ${should}`,
-    of: invariant,
-  })
-
-export { invariant, invariant as default }
+  }
+  Object.defineProperty(i, "of", { value: invariant })
+  return Object.freeze(i)
+}

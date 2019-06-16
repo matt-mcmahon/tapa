@@ -1,9 +1,6 @@
 import { describe, Try } from "riteway"
 import { inspect } from "util"
-import {
-  invariant as namedExport,
-  default as invariant,
-} from "./invariant.js"
+import { invariant } from "./invariant.js"
 import { invariant as indexExport } from "."
 
 describe("invariant module", async assert => {
@@ -15,19 +12,13 @@ describe("invariant module", async assert => {
   })
 
   assert({
-    given: "namedExport",
-    should: 'be identical to "invariant" export',
-    actual: namedExport,
-    expected: invariant,
-  })
-
-  assert({
     given: "indexExport",
     should: 'be identical to "invariant" export',
     actual: indexExport,
     expected: invariant,
   })
 
+  // Passing Invariant
   {
     const a = {
       given: "A",
@@ -38,7 +29,6 @@ describe("invariant module", async assert => {
     const b = {
       message: "given A; should B",
       result: true,
-      of: invariant,
     }
     assert({
       given: `passing invariant(${inspect(a)})`,
@@ -50,6 +40,8 @@ describe("invariant module", async assert => {
       },
     })
   }
+
+  // Failing Invariant
   {
     const a = {
       given: "A",
@@ -60,16 +52,31 @@ describe("invariant module", async assert => {
     const b = {
       message: "given A; should B",
       result: false,
-      of: invariant,
     }
+    const i = invariant(a)
+
     assert({
       given: `failing invariant(${inspect(a)})`,
       should: `augment with ${inspect(b)}`,
-      actual: invariant(a),
+      actual: i,
       expected: {
         ...a,
         ...b,
       },
+    })
+
+    assert({
+      given: "an invariant, i",
+      should: "be frozen",
+      actual: Object.isFrozen(i),
+      expected: true,
+    })
+
+    assert({
+      given: "an invariant, i",
+      should: "have a non-enumerable method, of",
+      actual: typeof i.of,
+      expected: "function",
     })
   }
 })
