@@ -53,31 +53,28 @@ const getPathRe = () => {
     drive +
     folders +
     filename +
-    column +
     row +
+    column +
     endLine
   return new RegExp(pattern, "i")
 }
 
 const parseLine = iife(
   (methodRe, pathRe) => line => {
-    const parsePath = location => {
+    const parsePath = (location = "") => {
       const matches = defaultTo([])(location.match(pathRe))
-      const path = matches[1] + matches[2]
-      const filename = matches[3]
-      const column = defaultTo(undefined)(
-        parseInt(matches && matches[2], 10)
-      )
-      const row = defaultTo(undefined)(
-        parseInt(matches && matches[3], 10)
-      )
-      return { path, filename, column, row }
+      const [, drive, path, filename, row, column] = matches
+      return {
+        path: defaultTo("")(drive + path),
+        filename: defaultTo(location)(filename),
+        column: defaultTo(undefined)(parseInt(column, 10)),
+        row: defaultTo(undefined)(parseInt(row, 10)),
+      }
     }
 
     const parseMethod = line => {
       const matches = defaultTo([])(line.match(methodRe))
-      const method = matches[1]
-      const location = normalize(defaultTo("")(matches[2]))
+      const [, method, location] = matches
       return { method, location }
     }
 
@@ -90,8 +87,8 @@ const parseLine = iife(
         enumerable: false,
         value: () =>
           `${method}\n${path}${filename}${
-            column ? column + ":" : ""
-          }${row ? row + ":" : ""}`,
+            row ? row + ":" : ""
+          }${column ? column + ":" : ""}`,
       }
     )
   },

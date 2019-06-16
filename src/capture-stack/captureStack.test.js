@@ -14,11 +14,11 @@ const exampleLine = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\capt
 
 const parsedLine = {
   line: exampleLine,
-  column: 11,
+  column: 9,
   filename: "captureStack.js",
   method: "captureStack",
   path: "w:\\@mwm\\tapa\\src\\capture-stack\\",
-  row: 9,
+  row: 11,
 }
 
 describe("capture-stack exports", async assert => {
@@ -51,7 +51,9 @@ describe("capture-stack/parseLine", async assert => {
   {
     const exampleLine =
       "     at Generator.next (<anonymous>)"
-    const parsedLine = {
+    const given = `a line without a path`
+    const should = `parse`
+    const expected = {
       column: undefined,
       filename: "<anonymous>",
       line: "     at Generator.next (<anonymous>)",
@@ -59,9 +61,6 @@ describe("capture-stack/parseLine", async assert => {
       path: "",
       row: undefined,
     }
-    const given = `the a line without a path`
-    const should = `parse`
-    const expected = parsedLine
     const actual = parseLine(exampleLine)
     assert({ given, should, actual, expected })
   }
@@ -145,18 +144,18 @@ describe("capture-stack/parseError", async assert => {
   const stack = parseError(exampleError)
 
   {
-    const actual = stack.includes(filepath)
+    const actual = stack.lines[0]
     const expected = {
-      column: 11,
+      column: 9,
       filename: "captureStack.js",
       line:
         "        at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
       method: "captureStack",
       path: "w:\\@mwm\\tapa\\src\\capture-stack\\",
-      row: 9,
+      row: 11,
     }
     const given = "parseError(...)"
-    const should = `include filepath "${filepath}"`
+    const should = `include "${inspect(expected)}"`
     assert({ given, should, actual, expected })
   }
 })

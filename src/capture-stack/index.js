@@ -1,1 +1,1 @@
-export { captureStack } from "./captureStack"
+export { captureStack, parseError } from "./captureStack"
