@@ -1,4 +1,4 @@
-import { normalize } from "path"
+import { normalize, parse } from "path"
 import {
   head,
   map,
@@ -34,44 +34,30 @@ const getMethodRe = () => {
   return new RegExp(pattern, "i")
 }
 
-const getPathRe = () => {
-  const slash = `[\\\\/]`
-  const notSlash = `[^\\\\/]`
-  const folder = `${notSlash}+${slash}+`
-  const windows = `(?:\\w+:${slash}+)`
-  const posix = `(?:${slash}+)`
+const neverNaN = pipe(
+  s => parseInt(s, 10),
+  n => (isNaN(n) ? undefined : n)
+)
 
-  const startLine = `^\\s*`
-  const drive = `(${windows}|${posix})`
-  const folders = `((?:${folder})+)`
-  const filename = `([^:]+):*`
-  const column = `(?:(\\d+)):*`
-  const row = `(\\d+)`
-  const endLine = `\\s*$`
-  const pattern =
-    startLine +
-    drive +
-    folders +
-    filename +
-    row +
-    column +
-    endLine
-  return new RegExp(pattern, "i")
+const parseBase = (base = "::") => {
+  const [filename, row, column] = base.split(":")
+  return {
+    filename,
+    column: neverNaN(column),
+    row: neverNaN(row),
+  }
+}
+
+const parsePath = (path = "") => {
+  const { base, dir } = parse(path)
+  return {
+    dir,
+    ...parseBase(base),
+  }
 }
 
 const parseLine = iife(
-  (methodRe, pathRe) => line => {
-    const parsePath = (location = "") => {
-      const matches = defaultTo([])(location.match(pathRe))
-      const [, drive, path, filename, row, column] = matches
-      return {
-        path: defaultTo("")(drive + path),
-        filename: defaultTo(location)(filename),
-        column: defaultTo(undefined)(parseInt(column, 10)),
-        row: defaultTo(undefined)(parseInt(row, 10)),
-      }
-    }
-
+  methodRe => line => {
     const parseMethod = line => {
       const matches = defaultTo([])(line.match(methodRe))
       const [, method, location] = matches
@@ -92,8 +78,7 @@ const parseLine = iife(
       }
     )
   },
-  getMethodRe(),
-  getPathRe()
+  getMethodRe()
 )
 
 const keep = line => {

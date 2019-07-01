@@ -13,12 +13,12 @@ import { inspect } from "util"
 const exampleLine = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
 
 const parsedLine = {
-  line: exampleLine,
-  column: 9,
-  filename: "captureStack.js",
   method: "captureStack",
-  path: "w:\\@mwm\\tapa\\src\\capture-stack\\",
+  column: 9,
   row: 11,
+  dir: "w:\\@mwm\\tapa\\src\\capture-stack",
+  filename: "captureStack.js",
+  line: exampleLine,
 }
 
 describe("capture-stack exports", async assert => {
@@ -58,7 +58,7 @@ describe("capture-stack/parseLine", async assert => {
       filename: "<anonymous>",
       line: "     at Generator.next (<anonymous>)",
       method: "Generator.next",
-      path: "",
+      dir: "",
       row: undefined,
     }
     const actual = parseLine(exampleLine)
@@ -116,7 +116,8 @@ describe("capture-stack/keep", async assert => {
       "  at W:\\@mwm\\tapa\\node_modules\\.registry.npmjs.org\\esm\\3.2.25\\node_modules\\esm\\esm.js:1:284879",
       false,
     ],
-  ].forEach(runTest)
+  ]
+  lines.forEach(runTest)
 })
 
 describe("capture-stack/parseError", async assert => {
@@ -138,21 +139,18 @@ describe("capture-stack/parseError", async assert => {
     `.trim(),
   }
 
-  const filepath =
-    "w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js"
-
   const stack = parseError(exampleError)
 
   {
-    const actual = stack.lines[0]
+    const { toString, ...actual } = stack.lines[0]
     const expected = {
+      method: "captureStack",
       column: 9,
+      row: 11,
+      dir: "w:\\@mwm\\tapa\\src\\capture-stack",
       filename: "captureStack.js",
       line:
         "        at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
-      method: "captureStack",
-      path: "w:\\@mwm\\tapa\\src\\capture-stack\\",
-      row: 11,
     }
     const given = "parseError(...)"
     const should = `include "${inspect(expected)}"`
