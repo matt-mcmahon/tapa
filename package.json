@@ -10,7 +10,9 @@
     "deep-equal": "^1.0.1",
     "esm": "^3.2.25",
     "pretty-error": "^2.1.1",
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "renderkid": "^2.0.3",
+    "stacktracey": "^1.2.112"
   },
   "description": "An experiment in more function testing.",
   "devDependencies": {
@@ -40,7 +42,7 @@
   },
   "scripts": {
     "lint": "standard ./src/**/*.js",
-    "test": "node -r esm ./scripts/run-tests.js",
+    "test": "node -r esm ./scripts/run-tests.js | tap-nirvana",
     "watch": "node -r esm ./scripts/watch-tests.js"
   },
   "types": "source/index.d.ts",

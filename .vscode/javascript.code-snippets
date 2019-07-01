@@ -1,63 +1,66 @@
 {
-	"Re-Export Module": {
-		"prefix": "rexport",
-		"body": [
-			"export { $1 } from \"./$1.js\"",
-		],
-		"description": "Re-Exports the Module"
-	},
-	"New TypeScript Definition File": {
-		"prefix": "new dts",
-		"body": [
-			"export declare const ${1:${TM_FILENAME/(.d.ts)//}}: ${0:value => () => value}"
-		],
-		"description": "Log output to console"
-	},
-	"New Module File": {
-		"prefix": "new module",
-		"body": [
-			"const ${1:${TM_FILENAME_BASE}} = ${0:value => () => value}",
-			"",
-			"export { $1, $1 as default }"
-		],
-		"description": "Log output to console"
-	},
-	"New Test File": {
-		"prefix": "new test",
-		"body": [
-			"import { describe } from \"./describe\"",
-			"import { dtsExists } from \"./dtsExists\"",
-			"import { ",
-			"  ${1:${TM_FILENAME_BASE/(.test|.spec)//}} as namedExport,",
-			"  default as $1 ",
-			"} from './$1.js'",
-			"import { $1 as indexExport } from './$1'",
-			"",
-			"describe(\"$1 module\", async assert => {",
-			"  assert({",
-			"    given: 'a module named \"./$1.js\"',",
-			"    should: \"have a default export\",",
-			"    actual: typeof $1,",
-			"    expected: \"function\",",
-			"  })",
-			"  ",
-			"  assert({",
-			"    given: 'import { $1 as namedExport } from \"./$1.js\"',",
-			"    should: \"be identical to default export\",",
-			"    actual: namedExport,",
-			"    expected: $1,",
-			"  })",
-			"  ",
-			"  assert({",
-			"    should: \"be identical to default export\",",
-			"    actual: indexExport,",
-			"    expected: $1,",
-			"  })",
-			"  ",
-			"  assert(dtsExists(import.meta.url, \"$1\"))",
-			"  ",
-			"  assert.fail(\"No Functionality Tests\")",
-			"})",
-		]
-	}
+  "Re-Export Module": {
+    "prefix": "rexport",
+    "body": [
+      "export { $1 } from \"./$1.js\"",
+    ],
+    "description": "Re-Exports the Module"
+  },
+  "Riteway-Style Test": {
+    "prefix": "rw",
+    "body": [
+      "{",
+      "  const given = \"$1\"",
+      "  const should = \"$2\"",
+      "  const actual = $3",
+      "  const expected = $4",
+      "  ${5:assert}({ given, should, actual, expected })",
+      "}"
+    ],
+    "description": "Re-Exports the Module"
+  },
+  "New TypeScript Definition File": {
+    "prefix": "new dts",
+    "body": [
+      "export declare const ${1:${TM_FILENAME/(.d.ts)//}}: ${0:value => () => value}"
+    ],
+    "description": "Log output to console"
+  },
+  "New Module File": {
+    "prefix": "new module",
+    "body": [
+      "const ${1:${TM_FILENAME_BASE}} = ${0:value => () => value}",
+      "",
+      "export { $1 }"
+    ],
+    "description": "Log output to console"
+  },
+  "New Test File": {
+    "prefix": "new test",
+    "body": [
+      "import { describe, Try } from \"riteway\"",
+      "import { ${1:${TM_FILENAME_BASE/(.test|.spec)//}} } from './$1'",
+      "import { $1 as indexExport } from '.'",
+      "",
+      "describe(\"$1 module\", async assert => {",
+      "  {",
+      "    const given = 'module named \"./$1\"'",
+      "    const should = 'have an export named \"$1\"'",
+      "    const actual = typeof $1",
+      "    const expected = \"function\"",
+      "    assert({ given, should, actual, expected })",
+      "  }",
+      "  ",
+      "  {",
+      "    const given = 'index export \"./$1\"'",
+      "    const should = \"be identical to named export\"",
+      "    const actual = indexExport",
+      "    const expected = $1",
+      "    assert({ given, should, actual, expected })",
+      "  }",
+      "  ",
+      "  throw new Error(\"No Functionality Tests\")",
+      "})",
+    ]
+  }
 }
