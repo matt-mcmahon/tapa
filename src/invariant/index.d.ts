@@ -1,18 +1,19 @@
 export interface Invariant<T> {
-  given: string
-  should: string
   actual: T
   expected: T
-}
-
-export interface Invariant<T> {
-  message: string
-  actual: T
-  expected: T
+  given?: string
+  should?: string
+  predicate?: (descriptor: {
+    actual: T
+    expected: T
+  }) => Boolean
 }
 
 /**
- * __invariant__
+ * ```
+ * invariant :: a => b
+ * ```
+ * -----------------------------------------------------------------------------
  *
  * Configures an assertion test
  *
