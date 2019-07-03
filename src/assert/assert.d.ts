@@ -1,17 +1,21 @@
-import { Invariant } from "../invariant"
-
 export declare interface Status {
   pass: number
   fail: number
   total: number
 }
 
+import { Invariant } from "../invariant"
+
 /**
- * __`assert :: invariant -> status`__
+ * ```
+ * assert :: invariant -> status
+ * ```
+ * -----------------------------------------------------------------------------
  *
- * The `assert` function takes an __invariant__ and returns a __status__ object
+ * The __assert__ function takes an _invariant_ and returns a _status_ object
  * representing the result of testing the invariant.
+ *
  */
-export declare function assert(
-  invariant: Invariant<any>
+export declare function assert<T>(
+  block: Invariant<T>
 ): Status

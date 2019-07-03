@@ -1,24 +1,18 @@
-import { invariant } from "../invariant"
-import { captureStack } from "../capture-stack"
+import { invariant, Status } from "../invariant"
 
-const assert = block => {
+const assert = async block => {
   const i = invariant({
     ...block,
-    stack: captureStack(assert),
   })
-  return i.result
-    ? {
-        pass: 1,
-        fail: 0,
-        total: 1,
-        invariant: i,
-      }
-    : {
-        pass: 0,
-        fail: 1,
-        total: 1,
-        invariant: i,
-      }
+
+  const j = await i.test(assert)
+
+  return {
+    passing: j.status === Status.passing ? 1 : 0,
+    failing: j.status === Status.failing ? 1 : 0,
+    total: 1,
+    invariant: j,
+  }
 }
 
 export { assert }
