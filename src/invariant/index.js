@@ -1,1 +1,1 @@
-export { invariant } from "./invariant"
+export { invariant, Status } from "./invariant"

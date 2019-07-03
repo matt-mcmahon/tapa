@@ -79,15 +79,15 @@ describe("invariant module", async assert => {
     }
   }
 
-  {
-    // Failing Invariant
-    const failing = invariant({
-      given: "A",
-      should: "B",
-      actual: 14,
-      expected: 2,
-    })
+  // Failing Invariant
+  const failing = invariant({
+    given: "A",
+    should: "B",
+    actual: 14,
+    expected: 2,
+  })
 
+  {
     {
       const { ...actual } = failing
       const expected = {
@@ -118,6 +118,14 @@ describe("invariant module", async assert => {
       const expected = `[${
         Status.failing
       }] given A; should B`
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const given = inspect`resolved.stack`
+      const should = inspect`exist`
+      const actual = resolved.stack.length > 0
+      const expected = true
       assert({ given, should, actual, expected })
     }
   }

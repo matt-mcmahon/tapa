@@ -4,26 +4,29 @@ import { inspect } from "../inspect"
 import { deepEqual } from "../deep-equal"
 
 export const Status = [
-  ["pending", 0, "*"],
-  ["passing", 1, "+"],
-  ["failing", -1, "-"],
-].reduce((o, [key, value, string]) => {
-  o[key] = {
-    valueOf: () => value,
-    toString: () => string,
-  }
+  ["pending", "*", 0],
+  ["passing", "+", 1],
+  ["failing", "-", -1],
+].reduce((o, [key, string, value]) => {
+  o[key] = Object.defineProperties(
+    {},
+    {
+      toString: { value: () => string },
+      valueOf: { value: () => value },
+    }
+  )
   return o
 }, {})
 
-const defineProperty = (target, enumerable) => (
+const defineProperty = (target, opts) => (
   key,
   from,
   defaultValue
 ) => {
+  const value = has(key, from) ? from[key] : defaultValue
   Object.defineProperty(target, key, {
-    configureable: true,
-    enumerable: enumerable,
-    value: has(key, from) ? from[key] : defaultValue,
+    ...opts,
+    value,
   })
 }
 
@@ -49,14 +52,15 @@ const test = ({
 
 export class Invariant {
   constructor(i) {
-    const show = defineProperty(this, true)
-    const hide = defineProperty(this, false)
+    const show = defineProperty(this, { enumerable: true })
+    const hide = defineProperty(this, { enumerable: false })
 
     show("actual", i)
     show("expected", i, true)
     show("given", i, inspect`${this.actual}`)
     show("should", i, inspect`be ${this.expected}`)
     show("status", i, Status.pending)
+    show("stack", i)
     hide("predicate", i, deepEqual)
     hide("toString", {}, toString(this))
     hide("test", {}, test(this))
