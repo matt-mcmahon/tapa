@@ -7,17 +7,17 @@
     "description": "Re-Exports the Module"
   },
   "Riteway-Style Test": {
-    "prefix": "rw",
+    "prefix": "plan",
     "body": [
       "{",
-      "  const given = \"$1\"",
-      "  const should = \"$2\"",
+      "  const given = inspect`$1`",
+      "  const should = inspect`$2`",
       "  const actual = $3",
       "  const expected = $4",
       "  ${5:assert}({ given, should, actual, expected })",
       "}"
     ],
-    "description": "Re-Exports the Module"
+    "description": "Test Plan"
   },
   "New TypeScript Definition File": {
     "prefix": "new dts",
@@ -39,27 +39,28 @@
     "prefix": "new test",
     "body": [
       "import { describe, Try } from \"riteway\"",
-      "import { ${1:${TM_FILENAME_BASE/(.test|.spec)//}} } from './$1'",
+      "import { inspect } from \"../inspect\"",
+      "import { ${1:${TM_FILENAME_BASE/(\\.test|\\.spec)//}} } from './$1'",
       "import { $1 as indexExport } from '.'",
       "",
       "describe(\"$1 module\", async assert => {",
       "  {",
-      "    const given = 'module named \"./$1\"'",
-      "    const should = 'have an export named \"$1\"'",
+      "    const given = inspect`module named \\${\"./$1\"}`",
+      "    const should = inspect`have an export named \\${$1}`",
       "    const actual = typeof $1",
       "    const expected = \"function\"",
       "    assert({ given, should, actual, expected })",
       "  }",
       "  ",
       "  {",
-      "    const given = 'index export \"./$1\"'",
-      "    const should = \"be identical to named export\"",
+      "    const given = inspect`index export`",
+      "    const should = inspect`be identical to named export`",
       "    const actual = indexExport",
       "    const expected = $1",
       "    assert({ given, should, actual, expected })",
       "  }",
       "  ",
-      "  throw new Error(\"No Functionality Tests\")",
+      "  $0${TM_SELECTED_TEXT:throw new Error(\"Add Functionality Tests!\")}",
       "})",
     ]
   }
