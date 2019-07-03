@@ -3,7 +3,7 @@ import { inspect as nodeInspect } from "util"
 const defaultOptions = {
   depth: Infinity,
   colors: true,
-  breakLength: 70,
+  breakLength: Infinity,
 }
 
 const configure = (options = defaultOptions) => (
