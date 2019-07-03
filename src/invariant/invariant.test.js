@@ -36,17 +36,18 @@ describe("invariant module", async assert => {
       actual: 14,
       expected: 14,
       status: Status.pending,
+      stack: undefined,
     }
-    const given = inspect`passing invariant(${actual})`
-    const should = inspect`augment with ${expected}`
+    const given = inspect`passing invariant`
+    const should = inspect`be ${expected}`
     assert({ given, should, actual, expected })
   }
 
   {
-    const given = "an invariant"
-    const should = "coerce to string"
     const actual = "" + passing
-    const expected = `[${Status.pending}] given A; should B`
+    const given = "an invariant"
+    const should = inspect`coerce to ${actual}`
+    const expected = `${Status.pending} given A; should B`
     assert({ given, should, actual, expected })
   }
 
@@ -72,9 +73,7 @@ describe("invariant module", async assert => {
     {
       const should = inspect`coerce to ${"pass"} string`
       const actual = "" + resolved
-      const expected = `[${
-        Status.passing
-      }] given A; should B`
+      const expected = `${Status.passing} given A; should B`
       assert({ given, should, actual, expected })
     }
   }
@@ -96,6 +95,7 @@ describe("invariant module", async assert => {
         actual: 14,
         expected: 2,
         status: Status.pending,
+        stack: undefined,
       }
       const given = inspect`failing invariant, ${actual}`
       assert({ given, actual, expected })
@@ -115,9 +115,7 @@ describe("invariant module", async assert => {
       const given = "a failing invariant"
       const should = inspect`coerce to ${"failing"} string`
       const actual = "" + resolved
-      const expected = `[${
-        Status.failing
-      }] given A; should B`
+      const expected = `${Status.failing} given A; should B`
       assert({ given, should, actual, expected })
     }
 

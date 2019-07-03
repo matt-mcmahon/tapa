@@ -4,23 +4,23 @@ import { inspect } from "../inspect"
 import { deepEqual } from "../deep-equal"
 
 export const Status = [
-  ["pending", "*", 0],
-  ["passing", "+", 1],
-  ["failing", "-", -1],
-].reduce((o, [key, string, value]) => {
+  ["pending", "[_]", 0],
+  ["passing", "[+]", 1],
+  ["failing", "[-]", -1],
+].reduce((o, [key, symbol, value]) => {
   o[key] = Object.defineProperties(
     {},
     {
-      toString: { value: () => string },
+      value: { value: key },
+      toString: { value: () => symbol },
       valueOf: { value: () => value },
     }
   )
   return o
 }, {})
 
-const defineProperty = (target, opts) => (
+const defineProperty = (from, target, opts) => (
   key,
-  from,
   defaultValue
 ) => {
   const value = has(key, from) ? from[key] : defaultValue
@@ -31,7 +31,7 @@ const defineProperty = (target, opts) => (
 }
 
 const toString = ({ given, should, status }) => () => {
-  return `[${status}] given ${given}; should ${should}`
+  return `${status} given ${given}; should ${should}`
 }
 
 const test = ({
@@ -51,19 +51,23 @@ const test = ({
 }
 
 export class Invariant {
-  constructor(i) {
-    const show = defineProperty(this, { enumerable: true })
-    const hide = defineProperty(this, { enumerable: false })
+  constructor(block) {
+    const show = defineProperty(block, this, {
+      enumerable: true,
+    })
+    const hide = defineProperty(block, this, {
+      enumerable: false,
+    })
 
-    show("actual", i)
-    show("expected", i, true)
-    show("given", i, inspect`${this.actual}`)
-    show("should", i, inspect`be ${this.expected}`)
-    show("status", i, Status.pending)
-    show("stack", i)
-    hide("predicate", i, deepEqual)
-    hide("toString", {}, toString(this))
-    hide("test", {}, test(this))
+    show("actual")
+    show("expected", true)
+    show("given", inspect`${this.actual}`)
+    show("should", inspect`be ${this.expected}`)
+    show("status", Status.pending)
+    show("stack")
+    hide("predicate", deepEqual)
+    hide("toString", toString(this))
+    hide("test", test(this))
 
     Object.freeze(this)
   }
