@@ -8,7 +8,7 @@ import {
   parseError,
 } from "./captureStack.js"
 import { captureStack as indexExport } from "."
-import { inspect } from "util"
+import { inspect } from "../index.js"
 
 const exampleLine = `  at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)`
 
@@ -68,7 +68,7 @@ describe("capture-stack/parseLine", async assert => {
 
 describe("capture-stack/keep", async assert => {
   const runTest = ([line, expected]) => {
-    const given = inspect(line)
+    const given = inspect`${line}`
     const should = expected ? "keep it" : "not keep it"
     const actual = keep(line)
     assert({ given, should, actual, expected })
@@ -153,7 +153,7 @@ describe("capture-stack/parseError", async assert => {
         "        at captureStack (w:\\@mwm\\tapa\\src\\capture-stack\\captureStack.js:11:9)",
     }
     const given = "parseError(...)"
-    const should = `include "${inspect(expected)}"`
+    const should = inspect`include "${expected}"`
     assert({ given, should, actual, expected })
   }
 })
