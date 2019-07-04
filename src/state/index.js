@@ -1,1 +1,1 @@
-export { status, pending, passing, failing } from "./status"
+export * from "./state"

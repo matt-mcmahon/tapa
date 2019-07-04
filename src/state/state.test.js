@@ -1,20 +1,17 @@
 import { describe, Try } from "riteway"
-import {
-  map,
-  invoker,
-  iife,
-  toUnary,
-} from "@mwm/functional"
+import { iife, toUnary } from "@mwm/functional"
 
 import { inspect } from "../inspect"
-import { status, pending, passing, failing } from "./status"
-import { status as indexExport } from "."
+import { passing, failing } from "../status"
 
-describe("status module", async assert => {
+import { state } from "./state"
+import { state as indexExport } from "."
+
+describe("state module", async assert => {
   {
-    const given = inspect`module named ${"./status"}`
-    const should = inspect`have an export named ${status}`
-    const actual = typeof status
+    const given = inspect`module named ${"./state"}`
+    const should = inspect`have an export named ${state}`
+    const actual = typeof state
     const expected = "function"
     assert({ given, should, actual, expected })
   }
@@ -23,41 +20,15 @@ describe("status module", async assert => {
     const given = inspect`index export`
     const should = inspect`be identical to named export`
     const actual = indexExport
-    const expected = status
+    const expected = state
     assert({ given, should, actual, expected })
   }
 
-  {
-    const given = inspect`status ${pending}`
-    const should = inspect`be like ${"pending"}`
-    const actual = pending == "pending"
-    const expected = true
-    assert({ given, should, actual, expected })
-  }
-
-  {
-    const given = inspect`status ${passing}`
-    const should = inspect`be like ${"passing"}`
-    const actual = passing == "passing"
-    const expected = true
-    assert({ given, should, actual, expected })
-  }
-
-  {
-    const given = inspect`status ${failing}`
-    const should = inspect`be like ${"failing"}`
-    const actual = failing == "failing"
-    const expected = true
-    assert({ given, should, actual, expected })
-  }
-
-  const invariant = ({ actual, expected }) => {
-    return {
-      actual,
-      expected,
-      status: actual === expected ? passing : failing,
-    }
-  }
+  const invariant = ({ actual, expected }) => ({
+    actual,
+    expected,
+    status: expected === actual ? passing : failing,
+  })
 
   const examples = iife(() => {
     const v = v => v
@@ -88,7 +59,7 @@ describe("status module", async assert => {
   }
 
   {
-    const { invariants, ...actual } = status(...examples)
+    const { invariants, ...actual } = state(...examples)
     const expected = examples.pending
     const given = inspect`array of values and promises`
     const should = inspect`have status ${expected}`
@@ -97,7 +68,7 @@ describe("status module", async assert => {
 
   {
     const actual = await Promise.all(examples)
-      .then(toUnary(status))
+      .then(toUnary(state))
       .then(({ invariants: ignored, ...actual }) => actual)
     const expected = examples.resolved
     const given = inspect`resolved promises`
