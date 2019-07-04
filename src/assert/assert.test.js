@@ -1,7 +1,12 @@
 import { describe } from "riteway"
 
 import { inspect } from "../inspect"
-import { captureStack } from "../stack"
+import {
+  isPending,
+  isPassing,
+  isFailing,
+  passing,
+} from "../status"
 
 import { assert as myAssert } from "./assert"
 import { assert as indexExport } from "."
@@ -23,85 +28,87 @@ describe("assert module", async assert => {
     assert({ given, should, actual, expected })
   }
 
+  // Passing Invariant
   {
-    const given = "a valid invariant"
-
-    const should = "pass"
-
-    const asserted = await myAssert({
+    const invariant = await myAssert({
       given: "valid",
       should: "pass",
       actual: true,
       expected: true,
-      captureStack,
     })
 
-    const actual = {
-      passing: asserted.passing,
-      failing: asserted.failing,
-      total: asserted.total,
-    }
-
-    const expected = {
-      passing: 1,
-      failing: 0,
-      total: 1,
-    }
-
+    const given = inspect`isPassing(${invariant})`
+    const should = inspect`be ${true}`
+    const actual = isPassing(invariant.status)
+    const expected = true
     assert({ given, should, actual, expected })
   }
 
-  const asserted = await myAssert({
-    given: "invalid",
-    should: "fail",
-    actual: false,
-    expected: true,
-    captureStack,
-  })
-
+  // Failing Invariant
   {
-    const given = "an invalid invariant"
-    const should = "fail"
-    const actual = {
-      passing: asserted.passing,
-      failing: asserted.failing,
-      total: asserted.total,
-    }
-    const expected = {
-      passing: 0,
-      failing: 1,
-      total: 1,
-    }
-    assert({ given, should, actual, expected })
-  }
-
-  {
-    const i = asserted.invariants[0]
-    const given = "an invariant"
-    const should = "have a stack"
-    const actual = typeof i.stack
-    const expected = "object"
-    assert({ given, should, actual, expected })
-  }
-
-  {
-    const promise = Promise.resolve({
-      given: "A",
-      should: "A",
-      actual: "A",
-      expected: "A",
-      captureStack,
+    const invariant = await myAssert({
+      actual: false,
+      expected: true,
+      given: "invalid",
+      should: "fail",
     })
-    const given = inspect`assert(${promise})`
-    const should = inspect`be okay`
-    const value = await myAssert(promise)
-    const { invariants, ...actual } = value
-    const expected = {
-      pending: 0,
-      passing: 1,
-      failing: 0,
-      total: 1,
+
+    {
+      const actual = isFailing(invariant)
+      const expected = true
+      const given = "an invalid invariant"
+      const should = "fail"
+      assert({ given, should, actual, expected })
     }
-    assert({ given, should, actual, expected })
+
+    {
+      const given = "a failing invariant"
+      const should = "have a stack"
+      const actual = typeof invariant.stack
+      const expected = "object"
+      assert({ given, should, actual, expected })
+    }
+  }
+
+  // Pending Invariant
+  {
+    const invariant = myAssert(
+      Promise.resolve({
+        given: "A",
+        should: "A",
+        actual: "A",
+        expected: "A",
+      })
+    )
+
+    {
+      const given = inspect`isPending(${invariant})`
+      const should = inspect`be ${true}`
+      const actual = isPending(invariant)
+      const expected = true
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const actual = await invariant
+      const expected = {
+        given: "A",
+        should: "A",
+        actual: "A",
+        expected: "A",
+        status: passing,
+      }
+      const given = inspect`await ${invariant}`
+      const should = inspect`resolve`
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const given = inspect`resolved invariant`
+      const should = inspect`pass`
+      const actual = isPassing(await invariant)
+      const expected = true
+      assert({ given, should, actual, expected })
+    }
   }
 })
