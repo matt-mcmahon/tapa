@@ -136,4 +136,40 @@ describe("status module", async assert => {
     const expected = false
     assert({ given, should, actual, expected })
   }
+
+  {
+    const actual = [
+      isPending(pending),
+      isPassing(pending),
+      isFailing(pending),
+    ]
+    const expected = [true, false, false]
+    const given = inspect`apply ${"pending"} to [isFailing, isPassing, isFailing]`
+    const should = inspect`be ${expected}`
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const actual = [
+      isPending(passing),
+      isPassing(passing),
+      isFailing(passing),
+    ]
+    const expected = [false, true, false]
+    const given = inspect`apply ${"passing"} to [isFailing, isPassing, isFailing]`
+    const should = inspect`be ${expected}`
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const actual = [
+      isPending(failing),
+      isPassing(failing),
+      isFailing(failing),
+    ]
+    const expected = [false, false, true]
+    const given = inspect`apply ${"failing"} to [isFailing, isPassing, isFailing]`
+    const should = inspect`be ${expected}`
+    assert({ given, should, actual, expected })
+  }
 })

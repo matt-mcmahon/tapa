@@ -28,11 +28,32 @@ export const passing = new Status("passing", "[+]")
 
 export const failing = new Status("failing", "[-]")
 
-export const isPending = v =>
-  isPromise(v) || (!isNil(v) && v.status == "pending")
+export const isPending = v => {
+  return isPromise(v)
+    ? true
+    : isNil(v)
+    ? false
+    : v == "pending"
+    ? true
+    : v.status == "pending"
+}
 
-export const isPassing = v =>
-  !isNil(v) && !isPromise(v) && v.status == "passing"
+export const isPassing = v => {
+  return isNil(v)
+    ? false
+    : isPromise(v)
+    ? false
+    : v == "passing"
+    ? true
+    : v.status == "passing"
+}
 
-export const isFailing = v =>
-  !isNil(v) && !isPromise(v) && v.status == "failing"
+export const isFailing = v => {
+  return isNil(v)
+    ? false
+    : isPromise(v)
+    ? false
+    : v == "failing"
+    ? true
+    : v.status == "failing"
+}
