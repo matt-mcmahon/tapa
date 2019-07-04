@@ -1,4 +1,5 @@
 const isPromise = v => v instanceof Promise
+const isNil = v => v === undefined || v === null
 
 class Status {
   constructor(long, short) {
@@ -28,10 +29,10 @@ export const passing = new Status("passing", "[+]")
 export const failing = new Status("failing", "[-]")
 
 export const isPending = v =>
-  isPromise(v) || v.status == "pending"
+  isPromise(v) || (!isNil(v) && v.status == "pending")
 
 export const isPassing = v =>
-  !isPromise(v) && v.status == "passing"
+  !isNil(v) && !isPromise(v) && v.status == "passing"
 
 export const isFailing = v =>
-  !isPromise(v) && v.status == "failing"
+  !isNil(v) && !isPromise(v) && v.status == "failing"

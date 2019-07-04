@@ -1,7 +1,7 @@
 import { describe } from "riteway"
-import { iife, toUnary } from "@mwm/functional"
 
 import { inspect } from "../inspect"
+
 import {
   pending,
   passing,
@@ -111,5 +111,29 @@ describe("status module", async assert => {
       const expected = false
       assert({ given, should, actual, expected })
     }
+  }
+
+  {
+    const given = inspect`isPending(${undefined})`
+    const should = inspect`return false`
+    const actual = isPending()
+    const expected = false
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const given = inspect`isPassing(${undefined})`
+    const should = inspect`return false`
+    const actual = isPassing()
+    const expected = false
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const given = inspect`isFailing(${undefined})`
+    const should = inspect`return false`
+    const actual = isFailing()
+    const expected = false
+    assert({ given, should, actual, expected })
   }
 })
