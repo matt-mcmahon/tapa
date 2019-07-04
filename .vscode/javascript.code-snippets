@@ -1,13 +1,14 @@
 {
   "Re-Export Module": {
     "prefix": "rexport",
+    "description": "Re-Exports the Module",
     "body": [
       "export { $1 } from \"./$1.js\"",
-    ],
-    "description": "Re-Exports the Module"
+    ]
   },
   "Riteway-Style Test": {
     "prefix": "plan",
+    "description": "Insert Test Plan",
     "body": [
       "{",
       "  const given = inspect`$1`",
@@ -16,27 +17,36 @@
       "  const expected = $4",
       "  ${5:assert}({ given, should, actual, expected })",
       "}"
-    ],
-    "description": "Test Plan"
+    ]
   },
-  "New TypeScript Definition File": {
+  "New Typing": {
     "prefix": "new dts",
+    "description": "Scaffold a Type File",
     "body": [
-      "export declare const ${1:${TM_FILENAME/(.d.ts)//}}: ${0:value => () => value}"
-    ],
-    "description": "Log output to console"
+      "/**",
+      " * ```",
+      " * ${1:${TM_FILENAME_BASE/(\\.d)//}}$2",
+      " * ```",
+      " * -----------------------------------------------------------------------------",
+      " * ",
+      " * $3",
+      " * ",
+      " */",
+      "export declare function $1(${4:arg}: ${5:any}): ${6:any}$0"
+    ]
   },
   "New Module File": {
     "prefix": "new module",
+    "description": "Scaffold a Module File",
     "body": [
       "const ${1:${TM_FILENAME_BASE}} = ${0:value => () => value}",
       "",
       "export { $1 }"
-    ],
-    "description": "Log output to console"
+    ]
   },
   "New Test File": {
     "prefix": "new test",
+    "description": "Scaffold a Test File",
     "body": [
       "import { describe, Try } from \"riteway\"",
       "import { inspect } from \"../inspect\"",
