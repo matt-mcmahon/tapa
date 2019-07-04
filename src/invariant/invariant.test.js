@@ -1,7 +1,6 @@
 import { describe } from "riteway"
 
 import { inspect } from "../inspect"
-import { captureStack } from "../stack"
 import {
   passing,
   failing,
@@ -35,7 +34,6 @@ describe("invariant module", async assert => {
     should: "B",
     actual: 14,
     expected: 14,
-    captureStack: () => captureStack(invariant),
   })
 
   {
@@ -83,7 +81,6 @@ describe("invariant module", async assert => {
       should: "B",
       actual: 14,
       expected: 2,
-      captureStack,
     })
 
     const { stack, ...actual } = f

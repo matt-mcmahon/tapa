@@ -1,5 +1,6 @@
 import { has } from "@mwm/functional"
 
+import { captureStack } from "../stack"
 import { deepEqual } from "../deep-equal"
 import { inspect } from "../inspect"
 import { passing, failing } from "../status"
@@ -19,7 +20,7 @@ export const invariant = block => new Invariant(block)
 
 export class Invariant {
   constructor(block) {
-    const { actual, captureStack } = block
+    const { actual, caller } = block
 
     const show = copy({
       from: block,
@@ -36,7 +37,7 @@ export class Invariant {
     if (deepEqual(this.expected)(this.actual) === true) {
       this.status = passing
     } else {
-      this.stack = captureStack()
+      this.stack = captureStack(caller)
       this.status = failing
     }
 
