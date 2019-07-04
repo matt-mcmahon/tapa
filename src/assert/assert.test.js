@@ -1,5 +1,8 @@
-import { describe, Try } from "riteway"
+import { describe } from "riteway"
+
 import { inspect } from "../inspect"
+import { captureStack } from "../stack"
+
 import { assert as myAssert } from "./assert"
 import { assert as indexExport } from "."
 
@@ -30,6 +33,7 @@ describe("assert module", async assert => {
       should: "pass",
       actual: true,
       expected: true,
+      captureStack,
     })
 
     const actual = {
@@ -52,6 +56,7 @@ describe("assert module", async assert => {
     should: "fail",
     actual: false,
     expected: true,
+    captureStack,
   })
 
   {
@@ -71,10 +76,32 @@ describe("assert module", async assert => {
   }
 
   {
+    const i = asserted.invariants[0]
     const given = "an invariant"
     const should = "have a stack"
-    const actual = typeof asserted.invariant.stack
+    const actual = typeof i.stack
     const expected = "object"
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const promise = Promise.resolve({
+      given: "A",
+      should: "A",
+      actual: "A",
+      expected: "A",
+      captureStack,
+    })
+    const given = inspect`assert(${promise})`
+    const should = inspect`be okay`
+    const value = await myAssert(promise)
+    const { invariants, ...actual } = value
+    const expected = {
+      pending: 0,
+      passing: 1,
+      failing: 0,
+      total: 1,
+    }
     assert({ given, should, actual, expected })
   }
 })

@@ -13,4 +13,4 @@ import { Status } from "../status"
  */
 export declare function assert<T>(
   what: Invariant<T> | Promise<T>
-): Status<[T]>
+): Status

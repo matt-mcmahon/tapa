@@ -1,18 +1,17 @@
-import { invariant, Status } from "../invariant"
+import { identity } from "@mwm/functional"
 
-const assert = async block => {
-  const i = invariant({
-    ...block,
-  })
+import { captureStack } from "../stack"
+import { invariant } from "../invariant"
+import { state } from "../state"
 
-  const j = await i.test(assert)
-
-  return {
-    passing: j.status === Status.passing ? 1 : 0,
-    failing: j.status === Status.failing ? 1 : 0,
-    total: 1,
-    invariant: j,
-  }
-}
+const assert = block =>
+  Promise.resolve(block)
+    .then(block => ({
+      ...block,
+      captureStack: () => captureStack(assert),
+    }))
+    .then(invariant)
+    .then(state)
+    .catch(identity)
 
 export { assert }
