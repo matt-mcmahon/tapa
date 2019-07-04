@@ -28,20 +28,17 @@ export const state = (...invariants) => {
   return new State(invariants)
 }
 
-const hide = (key, target) => {
+const hide = (target, key) => {
   Object.defineProperty(target, key, {
     enumerable: false,
   })
 }
 
-const update = state => (...invariants) => {
-  return invariants.length === 0
-    ? new State(state.invariants, state.history)
-    : new State(
-        [...state.invariants, ...invariants],
-        [...state.history, state]
-      )
-}
+const update = state => (...invariants) =>
+  new State(
+    [...state.invariants, ...invariants],
+    [...state.history, state]
+  )
 
 class State {
   constructor(invariants, history = []) {
@@ -50,9 +47,8 @@ class State {
       accumulator(invariants, history)
     )
     copy(state, this)
-    Object.defineProperty(this, "update", {
-      value: update(state),
-    })
+    this.update = update(state)
+    hide(this, "update")
   }
 
   get promise() {
