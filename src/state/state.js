@@ -1,12 +1,20 @@
 import { isPassing, isFailing } from "../status"
 
-const reducer = (a, invariant) => {
-  a.pending += invariant instanceof Promise ? 1 : 0
-  a.passing += isPassing(invariant) ? 1 : 0
-  a.failing += isFailing(invariant) ? 1 : 0
-  a.total += 1
-  a.invariants.push(invariant)
-  return a
+const reducer = (state, invariant) => {
+  const {
+    pending: n,
+    passing: p,
+    failing: f,
+    total: t,
+    invariants: is,
+  } = state
+  return {
+    pending: n + (invariant instanceof Promise ? 1 : 0),
+    passing: p + (isPassing(invariant) ? 1 : 0),
+    failing: f + (isFailing(invariant) ? 1 : 0),
+    total: t + 1,
+    invariants: [...is, invariant],
+  }
 }
 
 const accumulator = () => ({
@@ -17,8 +25,9 @@ const accumulator = () => ({
   invariants: [],
 })
 
-export const state = (...invariants) =>
-  new State(...invariants)
+export const state = (...invariants) => {
+  return new State(...invariants)
+}
 
 export class State {
   constructor(...invariants) {

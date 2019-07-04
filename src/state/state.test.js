@@ -1,4 +1,4 @@
-import { describe, Try } from "riteway"
+import { describe } from "riteway"
 import { iife, toUnary } from "@mwm/functional"
 
 import { inspect } from "../inspect"
