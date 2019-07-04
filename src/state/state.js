@@ -9,42 +9,41 @@ const reducer = (state, invariant) => {
   return state
 }
 
-const accumulator = () => ({
+const accumulator = (invariants, history) => ({
   pending: 0,
   passing: 0,
   failing: 0,
   total: 0,
+  invariants,
+  history,
 })
 
 export const state = (...invariants) => {
   return new State(invariants)
 }
 
-const addTo = (target, name) => (method, as, body) => {
-  const hash = `${name}#${method}`
-  Object.defineProperty(body, "name", { value: hash })
-  Object.defineProperty(target, method, { [as]: body })
-}
-
 class State {
   constructor(invariants, history = []) {
-    const state = invariants.reduce(reducer, accumulator())
-    const add = addTo(state, "State")
+    const temp = invariants.reduce(
+      reducer,
+      accumulator(invariants, history)
+    )
+    for (const key in temp) {
+      this[key] = temp[key]
+    }
+  }
 
-    add("update", "value", () => {
-      return new State(invariants, [...history, state])
+  update(...invariants) {
+    return new State(
+      [this.invariants, ...invariants],
+      [...this.history, this]
+    )
+  }
+
+  get promise() {
+    return Promise.all(this.invariants).then(is => {
+      return new State(is, [...this.history, this])
     })
-
-    add("promise", "get", () => {
-      const p = Promise.all(invariants)
-        .then(is => {
-          return new State(is, [...history, state])
-        })
-        .catch(identity)
-      return p
-    })
-
-    return state
   }
 
   static of = state
