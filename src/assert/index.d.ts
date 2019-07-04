@@ -11,6 +11,20 @@ import { Status } from "../status"
  * representing the result of testing the invariant.
  *
  */
+export interface Assert<T> {
+  (block: Invariant<T>): Promise<Status>
+}
+
+/**
+ * ```
+ * assert :: invariant -> state
+ * ```
+ * -----------------------------------------------------------------------------
+ *
+ * The __assert__ function takes an _invariant_ and returns a _status_ object
+ * representing the result of testing the invariant.
+ *
+ */
 export declare function assert<T>(
-  what: Invariant<T> | Promise<T>
-): Status
+  block: Invariant<T> | Promise<T>
+): Promise<Status>
