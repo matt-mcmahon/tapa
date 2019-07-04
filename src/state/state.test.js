@@ -58,8 +58,10 @@ describe("state module", async assert => {
     total: 7,
   }
 
+  const s = state(...examples)
+
   {
-    const { invariants, ...actual } = state(...examples)
+    const { invariants, ...actual } = s
     const expected = examples.pending
     const given = inspect`array of values and promises`
     const should = inspect`have status ${expected}`
@@ -67,9 +69,7 @@ describe("state module", async assert => {
   }
 
   {
-    const actual = await Promise.all(examples)
-      .then(toUnary(state))
-      .then(({ invariants: ignored, ...actual }) => actual)
+    const { invariants: _, ...actual } = await s.promise
     const expected = examples.resolved
     const given = inspect`resolved promises`
     const should = inspect`have status ${expected}`
