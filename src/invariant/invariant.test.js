@@ -1,6 +1,6 @@
 import { describe } from "riteway"
+
 import { inspect } from "../inspect"
-import { invariant } from "./invariant"
 import { captureStack } from "../stack"
 import {
   passing,
@@ -8,6 +8,8 @@ import {
   isPassing,
   isFailing,
 } from "../status"
+
+import { invariant } from "./invariant"
 import { invariant as indexExport } from "."
 
 describe("invariant module", async assert => {

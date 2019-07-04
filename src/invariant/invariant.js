@@ -1,4 +1,5 @@
 import { has } from "@mwm/functional"
+
 import { deepEqual } from "../deep-equal"
 import { inspect } from "../inspect"
 import { passing, failing } from "../status"
