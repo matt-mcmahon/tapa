@@ -1,5 +1,5 @@
 export * from "./assert"
-export * from "./capture-stack"
+export * from "./stack"
 export * from "./describe"
 export * from "./icons"
 export * from "./inspect"
