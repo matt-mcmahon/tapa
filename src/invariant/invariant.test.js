@@ -1,6 +1,8 @@
 import { describe } from "riteway"
 import { inspect } from "../inspect"
-import { invariant, Status } from "./invariant"
+import { invariant } from "./invariant"
+import { captureStack } from "../stack"
+import { passing, failing } from "../status"
 import { invariant as indexExport } from "."
 
 describe("invariant module", async assert => {
@@ -21,22 +23,22 @@ describe("invariant module", async assert => {
   }
 
   // Passing Invariant
-  const passing = invariant({
+  const p = invariant({
     given: "A",
     should: "B",
     actual: 14,
     expected: 14,
+    captureStack: () => captureStack(invariant),
   })
 
   {
-    const { ...actual } = passing
+    const { ...actual } = p
     const expected = {
       given: "A",
       should: "B",
       actual: 14,
       expected: 14,
-      status: Status.pending,
-      stack: undefined,
+      status: passing,
     }
     const given = inspect`passing invariant`
     const should = inspect`be ${expected}`
@@ -44,85 +46,46 @@ describe("invariant module", async assert => {
   }
 
   {
-    const actual = "" + passing
+    const actual = "" + p
     const given = "an invariant"
     const should = inspect`coerce to ${actual}`
-    const expected = `${Status.pending} given A; should B`
+    const expected = `${passing} given A; should B`
     assert({ given, should, actual, expected })
   }
 
   {
-    const given = inspect`an invariant, ${passing}`
+    const given = inspect`an invariant, ${p}`
     const should = inspect`be frozen`
-    const actual = Object.isFrozen(passing)
+    const actual = Object.isFrozen(p)
     const expected = true
     assert({ given, should, actual, expected })
   }
 
-  {
-    const resolved = await passing.test()
-    const given = inspect`resolved passing invariant, ${passing}`
-
-    {
-      const { status: actual } = resolved
-      const expected = Status.passing
-      const should = inspect`have status ${expected.toString()}`
-      assert({ given, should, actual, expected })
-    }
-
-    {
-      const should = inspect`coerce to ${"pass"} string`
-      const actual = "" + resolved
-      const expected = `${Status.passing} given A; should B`
-      assert({ given, should, actual, expected })
-    }
-  }
-
   // Failing Invariant
-  const failing = invariant({
-    given: "A",
-    should: "B",
-    actual: 14,
-    expected: 2,
-  })
-
   {
-    {
-      const { ...actual } = failing
-      const expected = {
-        given: "A",
-        should: "B",
-        actual: 14,
-        expected: 2,
-        status: Status.pending,
-        stack: undefined,
-      }
-      const given = inspect`failing invariant, ${actual}`
-      assert({ given, actual, expected })
+    const f = invariant({
+      given: "A",
+      should: "B",
+      actual: 14,
+      expected: 2,
+      captureStack,
+    })
+
+    const { stack, ...actual } = f
+    const expected = {
+      given: "A",
+      should: "B",
+      actual: 14,
+      expected: 2,
+      status: failing,
     }
-
-    const resolved = await failing.test()
-
-    {
-      const { status: actual } = { status: resolved.status }
-      const expected = Status.failing
-      const given = inspect`method ${failing.test}`
-      const should = inspect`be ${expected}`
-      assert({ given, should, actual, expected })
-    }
+    const given = inspect`failing invariant`
+    const should = inspect`be ${expected}`
+    assert({ given, should, actual, expected })
 
     {
-      const given = "a failing invariant"
-      const should = inspect`coerce to ${"failing"} string`
-      const actual = "" + resolved
-      const expected = `${Status.failing} given A; should B`
-      assert({ given, should, actual, expected })
-    }
-
-    {
-      const given = inspect`resolved.stack`
-      const should = inspect`exist`
-      const actual = resolved.stack.length > 0
+      const should = inspect`have a stack`
+      const actual = stack.length > 0
       const expected = true
       assert({ given, should, actual, expected })
     }
