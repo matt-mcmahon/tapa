@@ -1,5 +1,5 @@
 import { isPending, isPassing, isFailing } from "../status"
-import { identity } from "@mwm/functional"
+import { pipeV } from "@mwm/functional"
 
 const reducer = (state, invariant) => {
   state.pending += isPending(invariant) ? 1 : 0
@@ -18,32 +18,48 @@ const accumulator = (invariants, history) => ({
   history,
 })
 
+const copy = (source, target) => {
+  return Object.entries(source).forEach(([key, value]) => {
+    target[key] = value
+  })
+}
+
 export const state = (...invariants) => {
   return new State(invariants)
 }
 
+const hide = (key, target) => {
+  Object.defineProperty(target, key, {
+    enumerable: false,
+  })
+}
+
+const update = state => (...invariants) => {
+  return invariants.length === 0
+    ? new State(state.invariants, state.history)
+    : new State(
+        [...state.invariants, ...invariants],
+        [...state.history, state]
+      )
+}
+
 class State {
   constructor(invariants, history = []) {
-    const temp = invariants.reduce(
+    const state = invariants.reduce(
       reducer,
       accumulator(invariants, history)
     )
-    for (const key in temp) {
-      this[key] = temp[key]
-    }
-  }
-
-  update(...invariants) {
-    return new State(
-      [this.invariants, ...invariants],
-      [...this.history, this]
-    )
+    copy(state, this)
+    Object.defineProperty(this, "update", {
+      value: update(state),
+    })
   }
 
   get promise() {
-    return Promise.all(this.invariants).then(is => {
-      return new State(is, [...this.history, this])
-    })
+    return Promise.all(this.invariants).then(
+      invariants =>
+        new State(invariants, [...this.history, this])
+    )
   }
 
   static of = state

@@ -44,10 +44,10 @@ describe("state module", async assert => {
     ]
   })
 
-  const s = state(...examples)
+  const s0 = state(...examples)
 
   {
-    const { invariants, ...actual } = s
+    const { invariants, ...actual } = s0
     const expected = {
       pending: 3,
       passing: 3,
@@ -60,14 +60,16 @@ describe("state module", async assert => {
     assert({ given, should, actual, expected })
   }
 
+  const s0p = await s0.promise
+
   {
-    const { invariants: _, ...actual } = await s.promise
+    const { invariants: _, ...actual } = s0p
     const expected = {
       pending: 0,
       passing: 5,
       failing: 2,
       total: 7,
-      history: [s],
+      history: [s0],
     }
     const given = inspect`resolved promises`
     const should = inspect`have new status of ${{
@@ -76,6 +78,29 @@ describe("state module", async assert => {
       failing: 2,
       total: 7,
     }}`
+    assert({ given, should, actual, expected })
+  }
+
+  const iH = invariant({ actual: "H", expected: "H" })
+  const s1 = s0p.update(iH)
+
+  {
+    const given = inspect`an additional invariant ${iH}`
+    const should = inspect`update status`
+    const actual = {
+      pending: s1.pending,
+      passing: s1.passing,
+      failing: s1.failing,
+      total: s1.total,
+      history: s1.history,
+    }
+    const expected = {
+      pending: 0,
+      passing: 6,
+      failing: 2,
+      total: 8,
+      history: [s0, s0p],
+    }
     assert({ given, should, actual, expected })
   }
 })

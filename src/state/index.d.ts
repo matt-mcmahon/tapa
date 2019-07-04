@@ -1,11 +1,20 @@
 import { Invariant } from "../invariant"
 
-export declare interface State<T> {
+export declare class State {
+  constructor(
+    invariants: Invariant<any>[],
+    history: State[]
+  )
   passing: number
   failing: number
   total: number
-  invariants: Invariant<T>[]
+  invariants: Invariant<any>[]
+  history: State[]
+  promise: Promise<State>
+  update: (...invariants: Invariant<any>[]) => State
+  static of: State
 }
+
 /**
  * ```
  * state :: invariant => state
@@ -16,5 +25,5 @@ export declare interface State<T> {
  *
  */
 export declare function state(
-  invariants: [Invariant<any> | Promise<any>]
-): State<Invariant<any>[]>
+  ...invariants: (Invariant<any> | Promise<any>)[]
+): State
