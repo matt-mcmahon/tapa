@@ -1,4 +1,6 @@
-export class Status {
+const isPromise = v => v instanceof Promise
+
+class Status {
   constructor(long, short) {
     Object.defineProperties(this, {
       is: {
@@ -24,8 +26,6 @@ export const pending = new Status("pending", "[_]")
 export const passing = new Status("passing", "[+]")
 
 export const failing = new Status("failing", "[-]")
-
-const isPromise = v => v instanceof Promise
 
 export const isPending = v =>
   isPromise(v) || v.status == "pending"
