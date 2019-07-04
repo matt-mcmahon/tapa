@@ -1,14 +1,9 @@
-export declare interface Status {
-  pass: number
-  fail: number
-  total: number
-}
-
 import { Invariant } from "../invariant"
+import { Status } from "../status"
 
 /**
  * ```
- * assert :: invariant -> status
+ * assert :: invariant -> state
  * ```
  * -----------------------------------------------------------------------------
  *
@@ -17,5 +12,5 @@ import { Invariant } from "../invariant"
  *
  */
 export declare function assert<T>(
-  block: Invariant<T>
-): Status
+  what: Invariant<T> | Promise<T>
+): Status<[T]>

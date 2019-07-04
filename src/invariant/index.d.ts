@@ -22,9 +22,3 @@ export interface Invariant<T> {
 export declare function invariant<T>(
   descriptor: Invariant<T>
 ): Invariant<T>
-
-export enum Status {
-  passing,
-  failing,
-  pending,
-}

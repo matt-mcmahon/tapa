@@ -1,10 +1,4 @@
-export interface Invariant<T> {
-  given: string
-  should: string
-  actual: T
-  expected: T
-}
-
+import { Invariant } from "../invariant"
 export interface Iterator<T> {
   done: boolean
   next(): T | undefined
@@ -23,12 +17,16 @@ export interface State {
   [Symbol.iterator]: Iterator<State>
 }
 
-export interface Plan {
-  (assert: Function): Promise<any>
+export interface Assert {
+  (invariant: Invariant<any>): void
 }
 
-export function describe(): (
-  description: string,
-  plan: Plan,
-  state?: State
-) => void
+export interface Plan<T> {
+  (assert: Assert): Promise<T>
+}
+
+export function describe(
+  assert: Assert
+): (
+  state: State
+) => <T>(description: string, plan: Plan<T>) => Promise<T>
