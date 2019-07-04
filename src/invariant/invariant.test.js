@@ -2,7 +2,12 @@ import { describe } from "riteway"
 import { inspect } from "../inspect"
 import { invariant } from "./invariant"
 import { captureStack } from "../stack"
-import { passing, failing } from "../status"
+import {
+  passing,
+  failing,
+  isPassing,
+  isFailing,
+} from "../status"
 import { invariant as indexExport } from "."
 
 describe("invariant module", async assert => {
@@ -61,6 +66,14 @@ describe("invariant module", async assert => {
     assert({ given, should, actual, expected })
   }
 
+  {
+    const given = inspect`isPassing({ ..., status: ${passing} })`
+    const should = inspect`be ${true}`
+    const actual = isPassing(p)
+    const expected = true
+    assert({ given, should, actual, expected })
+  }
+
   // Failing Invariant
   {
     const f = invariant({
@@ -86,6 +99,14 @@ describe("invariant module", async assert => {
     {
       const should = inspect`have a stack`
       const actual = stack.length > 0
+      const expected = true
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const given = inspect`isFailing({ ..., status: ${failing} })`
+      const should = inspect`be true`
+      const actual = isFailing(f)
       const expected = true
       assert({ given, should, actual, expected })
     }
