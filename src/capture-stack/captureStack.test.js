@@ -49,8 +49,7 @@ describe("capture-stack/parseLine", async assert => {
   }
 
   {
-    const exampleLine =
-      "     at Generator.next (<anonymous>)"
+    const line = "     at Generator.next (<anonymous>)"
     const given = `a line without a path`
     const should = `parse`
     const expected = {
@@ -61,7 +60,24 @@ describe("capture-stack/parseLine", async assert => {
       dir: "",
       row: undefined,
     }
-    const actual = parseLine(exampleLine)
+    const actual = parseLine(line)
+    assert({ given, should, actual, expected })
+  }
+
+  {
+    const line =
+      "    at \\src\\capture-stack\\captureStack.js:141:11"
+    const given = inspect`a line without methods and parens`
+    const should = inspect`parse`
+    const actual = parseLine(line)
+    const expected = {
+      column: 11,
+      filename: "captureStack.js",
+      line: "     at Generator.next (<anonymous>)",
+      method: undefined,
+      dir: "\\src\\capture-stack",
+      row: 141,
+    }
     assert({ given, should, actual, expected })
   }
 })
