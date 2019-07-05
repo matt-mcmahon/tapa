@@ -22,11 +22,12 @@ class Status {
   }
 }
 
-export const pending = new Status("pending", "[_]")
+// Width 1 Symbols: ☐☑☒✓╳⌧
+export const pending = new Status("pending", "☐")
 
-export const passing = new Status("passing", "[+]")
+export const passing = new Status("passing", "✓")
 
-export const failing = new Status("failing", "[-]")
+export const failing = new Status("failing", "╳")
 
 export const isPending = v => {
   return isPromise(v)
