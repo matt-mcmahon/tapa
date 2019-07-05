@@ -1,60 +1,56 @@
 import { isPending, isPassing, isFailing } from "../status"
-import { pipeV } from "@mwm/functional"
 
-const reducer = (state, invariant) => {
-  state.pending += isPending(invariant) ? 1 : 0
-  state.passing += isPassing(invariant) ? 1 : 0
-  state.failing += isFailing(invariant) ? 1 : 0
-  state.total += 1
-  return state
+const reducer = (summary, assertion) => {
+  summary.pending += isPending(assertion) ? 1 : 0
+  summary.passing += isPassing(assertion) ? 1 : 0
+  summary.failing += isFailing(assertion) ? 1 : 0
+  summary.total += 1
+  return summary
 }
 
-const accumulator = (invariants, history) => ({
+const accumulator = () => ({
   pending: 0,
   passing: 0,
   failing: 0,
   total: 0,
-  invariants,
-  history,
 })
 
-const copy = (source, target) => {
-  return Object.entries(source).forEach(([key, value]) => {
-    target[key] = value
-  })
+export const state = (name, ...assertions) => {
+  return new State({ name, assertions })
 }
-
-export const state = (...invariants) => {
-  return new State(invariants)
-}
-
-const hide = (target, key) => {
-  Object.defineProperty(target, key, {
-    enumerable: false,
-  })
-}
-
-const update = state => (...invariants) =>
-  new State(
-    [...state.invariants, ...invariants],
-    [...state.history, state]
-  )
 
 class State {
-  constructor(invariants, history = []) {
-    const state = invariants.reduce(
-      reducer,
-      accumulator(invariants, history)
-    )
-    copy(state, this)
-    this.update = update(state)
-    hide(this, "update")
+  constructor({ name, assertions, history = [] }) {
+    this.name
+    this.history = Object.freeze(history)
+    this.assertions = Object.freeze(assertions)
+    Object.freeze(this)
+  }
+
+  get length() {
+    return this.history.length
+  }
+
+  get summary() {
+    return this.assertions.reduce(reducer, accumulator())
+  }
+
+  add(...assertions) {
+    return new State({
+      name: this.name,
+      assertions: [...this.assertions, ...assertions],
+      history: [...this.history, this],
+    })
   }
 
   get promise() {
-    return Promise.all(this.invariants).then(
-      invariants =>
-        new State(invariants, [...this.history, this])
+    return Promise.all(this.assertions).then(
+      assertions =>
+        new State({
+          assertions,
+          name: this.name,
+          history: [...this.history, this],
+        })
     )
   }
 
