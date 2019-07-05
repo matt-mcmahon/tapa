@@ -1,17 +1,17 @@
-import { Invariant } from "../invariant"
+import { Assertion } from "../assert"
 
 export declare class State {
   constructor(
-    invariants: Invariant<any>[],
+    assertions: Assertion<any>[],
     history: State[]
   )
   passing: number
   failing: number
   total: number
-  invariants: Invariant<any>[]
+  assertions: Assertion<any>[]
   history: State[]
   promise: Promise<State>
-  update: (...invariants: Invariant<any>[]) => State
+  update: (...assertions: Assertion<any>[]) => State
   static of: State
 }
 
@@ -25,5 +25,5 @@ export declare class State {
  *
  */
 export declare function state(
-  ...invariants: (Invariant<any> | Promise<any>)[]
+  ...assertions: (Assertion<any> | Promise<any>)[]
 ): State

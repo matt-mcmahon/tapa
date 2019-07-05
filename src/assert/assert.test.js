@@ -1,114 +1,151 @@
 import { describe } from "riteway"
-
-import { inspect } from "../inspect"
-import {
-  isPending,
-  isPassing,
-  isFailing,
-  passing,
-} from "../status"
-
-import { assert as myAssert } from "./assert"
 import { assert as indexExport } from "."
+import { inspect } from "../inspect"
+import { failing, passing } from "../status"
+import { assert } from "./assert"
 
-describe("assert module", async assert => {
+describe("assert module", async rwAssert => {
   {
-    const given = inspect`module named ${"./assert"}`
-    const should = inspect`have an export named ${assert}`
-    const actual = typeof myAssert
+    const given = '"assert" import'
+    const should = "be a function"
+    const actual = typeof assert
     const expected = "function"
-    assert({ given, should, actual, expected })
+    rwAssert({ given, should, actual, expected })
   }
 
   {
-    const given = inspect`index export`
-    const should = inspect`be identical to named export`
+    const given = "indexExport"
+    const should = 'be identical to "assert" export'
     const actual = indexExport
-    const expected = myAssert
-    assert({ given, should, actual, expected })
+    const expected = assert
+    rwAssert({ given, should, actual, expected })
   }
 
-  // Passing Invariant
+  // Passing Assertion
   {
-    const invariant = await myAssert({
-      given: "valid",
-      should: "pass",
-      actual: true,
-      expected: true,
-    })
-
-    const given = inspect`isPassing(${invariant})`
-    const should = inspect`be ${true}`
-    const actual = isPassing(invariant.status)
-    const expected = true
-    assert({ given, should, actual, expected })
-  }
-
-  // Failing Invariant
-  {
-    const invariant = await myAssert({
-      actual: false,
-      expected: true,
-      given: "invalid",
-      should: "fail",
+    const promise = assert({
+      given: "A",
+      should: "B",
+      actual: 14,
+      expected: 14,
     })
 
     {
-      const actual = isFailing(invariant)
+      const given = inspect`assert(${promise})`
+      const should = inspect`return a Promise`
+      const actual = promise instanceof Promise
       const expected = true
-      const given = "an invalid invariant"
-      const should = "fail"
-      assert({ given, should, actual, expected })
+      rwAssert({ given, should, actual, expected })
     }
 
-    {
-      const given = "a failing invariant"
-      const should = "have a stack"
-      const actual = typeof invariant.stack
-      const expected = "object"
-      assert({ given, should, actual, expected })
-    }
-  }
-
-  // Pending Invariant
-  {
-    const invariant = myAssert(
-      Promise.resolve({
-        given: "A",
-        should: "A",
-        actual: "A",
-        expected: "A",
-      })
-    )
+    const assertion = await promise
 
     {
-      const given = inspect`isPending(${invariant})`
-      const should = inspect`be ${true}`
-      const actual = isPending(invariant)
-      const expected = true
-      assert({ given, should, actual, expected })
-    }
-
-    {
-      const actual = await invariant
+      const actual = assertion
       const expected = {
         given: "A",
-        should: "A",
-        actual: "A",
-        expected: "A",
+        should: "B",
+        actual: 14,
+        expected: 14,
         status: passing,
       }
-      const given = inspect`await ${invariant}`
-      const should = inspect`resolve`
-      assert({ given, should, actual, expected })
+      const given = inspect`passing assertion`
+      const should = inspect`be ${expected}`
+      rwAssert({ given, should, actual, expected })
     }
 
     {
-      const given = inspect`resolved invariant`
-      const should = inspect`pass`
-      const actual = isPassing(await invariant)
+      const actual = "" + assertion
+      const given = "an assertion"
+      const should = inspect`coerce to ${actual}`
+      const expected = `${passing} given A; should B`
+      rwAssert({ given, should, actual, expected })
+    }
+
+    {
+      const given = inspect`${assertion}`
+      const should = inspect`be frozen`
+      const actual = Object.isFrozen(assertion)
       const expected = true
-      assert({ given, should, actual, expected })
+      rwAssert({ given, should, actual, expected })
+    }
+  }
+
+  // Failing Assertion
+  {
+    const promise = assert({
+      given: "A",
+      should: "B",
+      actual: 14,
+      expected: 2,
+    })
+
+    {
+      const given = inspect`assert(${promise})`
+      const should = inspect`return a Promise`
+      const actual = promise instanceof Promise
+      const expected = true
+      rwAssert({ given, should, actual, expected })
+    }
+
+    const { stack, ...assertion } = await promise
+
+    {
+      const actual = assertion
+      const expected = {
+        given: "A",
+        should: "B",
+        actual: 14,
+        expected: 2,
+        status: failing,
+      }
+      const given = inspect`a failing assertion`
+      const should = inspect`be ${expected}`
+      rwAssert({ given, should, actual, expected })
+    }
+
+    {
+      const given = inspect`a failing assertion`
+      const should = inspect`have a stack`
+      const actual = stack && stack.length > 0
+      const expected = true
+      rwAssert({ given, should, actual, expected })
+    }
+  }
+
+  // Pending Assertion
+  {
+    const block = Promise.resolve({
+      given: "A",
+      should: "B",
+      actual: 14,
+      expected: 14,
+    })
+
+    const promise = assert(block)
+
+    {
+      const given = inspect`assert(${block})`
+      const should = inspect`return a Promise`
+      const actual = promise instanceof Promise
+      const expected = true
+      rwAssert({ given, should, actual, expected })
+    }
+
+    const { stack, ...assertion } = await promise
+
+    {
+      const given = inspect`await ${promise}`
+      const should = inspect`resolve`
+      const actual = assertion
+      const expected = {
+        given: "A",
+        should: "B",
+        actual: 14,
+        expected: 14,
+        status: passing,
+      }
+      rwAssert({ given, should, actual, expected })
     }
   }
 })

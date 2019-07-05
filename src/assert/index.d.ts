@@ -1,5 +1,29 @@
-import { Invariant } from "../invariant"
 import { Status } from "../status"
+
+export interface Assertion<T> {
+  actual: T
+  expected: T
+  given?: string
+  should?: string
+  predicate?: (descriptor: {
+    actual: T
+    expected: T
+  }) => Boolean
+}
+
+/**
+ * ```
+ * invariant :: a => b
+ * ```
+ * -----------------------------------------------------------------------------
+ *
+ * Configures an assertion test
+ *
+ * @param {Assertion} descriptor
+ */
+export declare function invariant<T>(
+  descriptor: Assertion<T>
+): Assertion<T>
 
 /**
  * ```
@@ -12,7 +36,7 @@ import { Status } from "../status"
  *
  */
 export interface Assert<T> {
-  (block: Invariant<T>): Promise<Status>
+  (block: Assertion<T>): Promise<Status>
 }
 
 /**
@@ -26,5 +50,5 @@ export interface Assert<T> {
  *
  */
 export declare function assert<T>(
-  block: Invariant<T> | Promise<T>
+  block: Assertion<T> | Promise<T>
 ): Promise<Status>
