@@ -45,6 +45,14 @@ describe("state module", async assert => {
   const s7 = state("s7", ...examples)
 
   {
+    const actual = s7.name
+    const expected = "s7"
+    const given = inspect`s7.name`
+    const should = inspect`be ${actual}`
+    assert({ given, should, actual, expected })
+  }
+
+  {
     const { summary: actual } = s7
     const expected = {
       pending: 3,

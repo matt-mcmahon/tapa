@@ -21,7 +21,7 @@ export const state = (name, ...assertions) => {
 
 class State {
   constructor({ name, assertions, history = [] }) {
-    this.name
+    this.name = name
     this.history = Object.freeze(history)
     this.assertions = Object.freeze(assertions)
     Object.freeze(this)
