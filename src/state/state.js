@@ -29,6 +29,7 @@ class State {
     this.history = history
     this.name = name
     this.summary = assertions.reduce(reducer, accumulator())
+    this.next = this.next.bind(this)
   }
 
   [Symbol.iterator]() {
@@ -38,11 +39,13 @@ class State {
   [Symbol.asyncIterator]() {
     let state = this
     return {
-      next() {
-        return state.next().then(({ value, done }) => {
-          state = value
-          return { value, done }
-        })
+      next(...assertions) {
+        return state
+          .next(...assertions)
+          .then(({ value, done }) => {
+            state = value
+            return { value, done }
+          })
       },
     }
   }
