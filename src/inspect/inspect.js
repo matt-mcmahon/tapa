@@ -1,7 +1,7 @@
 import { inspect as nodeInspect } from "util"
 
 const defaultOptions = {
-  depth: Infinity,
+  depth: 1,
   colors: true,
   breakLength: Infinity,
 }
