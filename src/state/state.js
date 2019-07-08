@@ -15,21 +15,19 @@ const reducer = (summary, assertion) => {
   return summary
 }
 
-export const state = (label, ...assertions) => {
-  return new State({ label, assertions })
+export const state = (name, ...assertions) => {
+  return new State({ name, assertions })
 }
 
 class State {
   constructor({
-    label = "",
+    name = "",
     assertions = [],
-    done = false,
     history = [],
   } = {}) {
     this.assertions = assertions
-    this.done = done
     this.history = history
-    this.label = label
+    this.name = name
     this.summary = assertions.reduce(reducer, accumulator())
   }
 
@@ -41,43 +39,28 @@ class State {
     return this
   }
 
+  get done() {
+    return this.summary.pending === 0
+  }
+
   get length() {
     return this.assertions.length
   }
 
-  next(...assertions) {
-    const promiseWhenDone = () =>
-      Promise.resolve({
-        done: true,
-        value: undefined,
-      })
-
-    const promiseWhenResolved = () =>
-      Promise.all(this.assertions).then(assertions => ({
-        done: false,
-        value: new State({
-          label: this.label,
-          assertions: assertions,
+  async next(...assertions) {
+    return this.done && assertions.length === 0
+      ? {
           done: true,
-          history: [...this.history, this],
-        }),
-      }))
-
-    const promiseWhenMore = () =>
-      Promise.resolve({
-        done: false,
-        value: new State({
-          label: this.label,
-          assertions: [...this.assertions, ...assertions],
-          history: [...this.history, this],
-          done: false,
-        }),
-      })
-
-    return this.done
-      ? promiseWhenDone()
-      : assertions.length === 0
-      ? promiseWhenResolved()
-      : promiseWhenMore()
+          value: this,
+        }
+      : Promise.all(this.assertions).then(resolved => {
+          const value = new State({
+            name: this.name,
+            assertions: [...resolved, ...assertions],
+            history: [...this.history, this],
+          })
+          const done = value.summary.pending === 0
+          return { done, value }
+        })
   }
 }

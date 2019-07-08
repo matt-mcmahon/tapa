@@ -1,5 +1,5 @@
 import { describe } from "riteway"
-import { iife, prop } from "@mwm/functional"
+import { prop } from "@mwm/functional"
 
 import { inspect } from "../inspect"
 import { passing, failing } from "../status"
@@ -32,27 +32,25 @@ describe("state module", async assert => {
     status: expected === actual ? passing : failing,
   })
 
-  const examples = iife(() => {
-    const v = v => v
-    const p = v => Promise.resolve(v)
-    return [
-      v(a({ actual: "A", expected: "A" })),
-      p(a({ actual: "B", expected: "B" })),
-      v(a({ actual: "c", expected: "C" })),
-      p(a({ actual: "d", expected: "D" })),
-      p(a({ actual: "E", expected: "E" })),
-      v(a({ actual: "F", expected: "F" })),
-      v(a({ actual: "G", expected: "G" })),
-    ]
-  })
+  const v = v => v
+  const p = v => Promise.resolve(v)
+  const examples = [
+    v(a({ actual: "A", expected: "A" })),
+    p(a({ actual: "B", expected: "B" })),
+    v(a({ actual: "c", expected: "C" })),
+    p(a({ actual: "d", expected: "D" })),
+    p(a({ actual: "E", expected: "E" })),
+    v(a({ actual: "F", expected: "F" })),
+    v(a({ actual: "G", expected: "G" })),
+  ]
 
   const s0 = state("my-state", ...examples)
 
   {
     {
-      const actual = s0.label
+      const actual = s0.name
       const expected = "my-state"
-      const given = inspect`s0.label`
+      const given = inspect`s0.name`
       const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
@@ -79,8 +77,9 @@ describe("state module", async assert => {
     }
   }
 
-  const iH = a({ actual: "H", expected: "H" })
-  const s1promise = s0.next(iH)
+  const iH = p(a({ actual: "H", expected: "H" }))
+  const iJ = v(a({ actual: "j", expected: "J" }))
+  const s1promise = s0.next(iH, iJ)
   const { value: s1, done: s1done } = await s1promise
 
   {
@@ -103,10 +102,10 @@ describe("state module", async assert => {
     {
       const actual = s1.summary
       const expected = {
-        pending: 3,
-        passing: 4,
-        failing: 1,
-        length: 8,
+        pending: 1,
+        passing: 5,
+        failing: 3,
+        length: 9,
       }
       const given = inspect`s1.summary`
       const should = inspect`be ${expected}`
@@ -116,7 +115,7 @@ describe("state module", async assert => {
     {
       const actual = [...s1]
       const expected = s1.history
-      const given = inspect`[...s1]`
+      const given = inspect`Using Iterator: [...s1]`
       const should = inspect`be s1.history`
       assert({ given, should, actual, expected })
     }
@@ -147,10 +146,10 @@ describe("state module", async assert => {
     {
       const actual = s2.summary
       const expected = {
-        pending: 0,
+        failing: 3,
+        length: 9,
         passing: 6,
-        failing: 2,
-        length: 8,
+        pending: 0,
       }
       const given = inspect`s2.summary`
       const should = inspect`be ${expected}`
@@ -169,7 +168,7 @@ describe("state module", async assert => {
 
     {
       const actual = s2done
-      const expected = false
+      const expected = true
       const given = inspect`s2`
       const should = inspect`should not be done`
       assert({ given, should, actual, expected })
@@ -189,10 +188,10 @@ describe("state module", async assert => {
     }
 
     {
-      const actual = s3
-      const expected = undefined
-      const given = inspect`s3`
-      const should = inspect`should be ${expected}`
+      const actual = s3 === s2
+      const expected = true
+      const given = inspect`s3 === s2 ?`
+      const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
 
@@ -201,6 +200,14 @@ describe("state module", async assert => {
       const expected = true
       const given = inspect`s3`
       const should = inspect`should be done`
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const actual = await s3.next()
+      const expected = { value: s3, done: true }
+      const given = inspect`more calls to s3.next()`
+      const should = inspect`return ${expected}`
       assert({ given, should, actual, expected })
     }
   }

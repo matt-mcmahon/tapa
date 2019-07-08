@@ -1,18 +1,31 @@
 import { Assertion } from "../assert"
 
 export declare class State {
-  constructor(
-    assertions: Assertion<any>[],
+  constructor(options: {
+    name: string
+    assertions: Assertion<any>[]
     history: State[]
-  )
-  passing: number
-  failing: number
-  total: number
+  })
+
   assertions: Assertion<any>[]
   history: State[]
   promise: Promise<State>
-  update: (...assertions: Assertion<any>[]) => State
-  static of: State
+  summary: {
+    pending: number
+    passing: number
+    failing: number
+    total: number
+  }
+
+  add: (...assertions: Assertion<any>[]) => State
+  static of: (...assertions: Assertion<any>[]) => State;
+  [Symbol.iterator](): { done: boolean; value: State }
+  [Symbol.asyncIterator](): Promise<{
+    done: Boolean
+    value: State
+  }>
+  done: boolean
+  length: number
 }
 
 /**
@@ -25,5 +38,6 @@ export declare class State {
  *
  */
 export declare function state(
+  name: string,
   ...assertions: (Assertion<any> | Promise<any>)[]
 ): State
