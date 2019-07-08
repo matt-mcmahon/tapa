@@ -7,7 +7,7 @@ import { passing, failing } from "../status"
 import { state } from "./state"
 import { state as indexExport } from "."
 
-describe("state module", async assert => {
+describe("state module: sanity tests", async assert => {
   {
     {
       const given = inspect`module named ${"./state"}`
@@ -46,6 +46,7 @@ describe("state module", async assert => {
 
   const s0 = state("my-state", ...examples)
 
+  // Constructor Tests
   {
     {
       const actual = s0.name
@@ -75,21 +76,33 @@ describe("state module", async assert => {
       const should = inspect`have summary ${expected}`
       assert({ given, should, actual, expected })
     }
+  }
+
+  // AsyncIterator API Tests
+  {
+    const states = []
+    for await (const state of s0) {
+      states.push(state)
+    }
 
     {
-      const history = []
-      for await (const state of s0) {
-        history.push(state)
-      }
-      const actual = history.pop().summary
+      const actual = states.length
+      const expected = 1
+      const given = inspect`API`
+      const should = inspect`produce ${expected} state`
+      assert({ given, should, actual, expected })
+    }
+
+    {
+      const actual = states[0].summary
       const expected = {
         pending: 0,
         passing: 5,
         failing: 2,
         length: 7,
       }
-      const given = inspect``
-      const should = inspect``
+      const given = inspect`Final API status`
+      const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
   }
@@ -97,7 +110,7 @@ describe("state module", async assert => {
   const iH = p(a({ actual: "H", expected: "H" }))
   const iJ = v(a({ actual: "j", expected: "J" }))
   const s1promise = s0.next(iH, iJ)
-  const { value: s1, done: s1done } = await s1promise
+  const s1 = await s1promise
 
   {
     {
@@ -109,10 +122,10 @@ describe("state module", async assert => {
     }
 
     {
-      const actual = s1done
+      const actual = s1.done
       const expected = false
-      const given = inspect`s1`
-      const should = inspect`should not be done`
+      const given = inspect`s1.done`
+      const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
 
@@ -149,7 +162,7 @@ describe("state module", async assert => {
   }
 
   const s2promise = s1.next()
-  const { value: s2, done: s2done } = await s2promise
+  const s2 = await s2promise
 
   {
     {
@@ -184,22 +197,22 @@ describe("state module", async assert => {
     }
 
     {
-      const actual = s2done
-      const expected = false
-      const given = inspect`s2`
-      const should = inspect`should not be done`
+      const actual = s2.done
+      const expected = true
+      const given = inspect`s2.done`
+      const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
   }
 
   const s3promise = s2.next()
-  const { value: s3, done: s3done } = await s3promise
+  const s3 = await s3promise
 
   {
     {
       const actual = s3promise instanceof Promise
       const expected = true
-      const given = inspect`s2.next() as ${s3promise}`
+      const given = inspect`s2.next()`
       const should = inspect`be a ${Promise}`
       assert({ given, should, actual, expected })
     }
@@ -207,24 +220,33 @@ describe("state module", async assert => {
     {
       const actual = s3 === s2
       const expected = true
-      const given = inspect`s3 === s2 ?`
+      const given = inspect`s3 === s2`
       const should = inspect`be ${expected}`
       assert({ given, should, actual, expected })
     }
 
     {
-      const actual = s3done
+      const actual = s3.done
       const expected = true
-      const given = inspect`s3`
-      const should = inspect`should be done`
+      const given = inspect`s3.done`
+      const should = inspect`be ${true}`
       assert({ given, should, actual, expected })
     }
 
     {
-      const actual = await s3.next()
-      const expected = { value: s3, done: true }
-      const given = inspect`more calls to s3.next()`
-      const should = inspect`return ${expected}`
+      const actual = await s3
+        .next()
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+        .then(s => s.next())
+      const expected = s2
+      const given = inspect`many calls to s3.next()`
+      const should = inspect`return ${expected.name}`
       assert({ given, should, actual, expected })
     }
   }

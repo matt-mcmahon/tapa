@@ -32,24 +32,6 @@ class State {
     this.next = this.next.bind(this)
   }
 
-  [Symbol.iterator]() {
-    return this.history[Symbol.iterator]()
-  }
-
-  [Symbol.asyncIterator]() {
-    let state = this
-    return {
-      next(...assertions) {
-        return state
-          .next(...assertions)
-          .then(({ value, done }) => {
-            state = value
-            return { value, done }
-          })
-      },
-    }
-  }
-
   get done() {
     return this.summary.pending === 0
   }
@@ -58,21 +40,34 @@ class State {
     return this.assertions.length
   }
 
-  async next(...assertions) {
+  next(...assertions) {
     const done = this.done && assertions.length === 0
-    return done
-      ? {
-          done: true,
-          value: this,
-        }
-      : Promise.all(this.assertions).then(resolved => {
-          const value = new State({
-            name: this.name,
-            assertions: [...resolved, ...assertions],
-            history: [...this.history, this],
-          })
-          const done = false
-          return { done, value }
+    if (done) {
+      return Promise.resolve(this)
+    } else {
+      return Promise.all(this.assertions).then(resolved => {
+        return new State({
+          name: this.name,
+          assertions: [...resolved, ...assertions],
+          history: [...this.history, this],
         })
+      })
+    }
+  }
+
+  [Symbol.iterator]() {
+    return this.history[Symbol.iterator]()
+  }
+
+  [Symbol.asyncIterator]() {
+    const hidden = { state: this }
+    return {
+      next: async (...assertions) => {
+        const value = await hidden.state.next(...assertions)
+        const done = value === hidden.state
+        hidden.state = value
+        return { value, done }
+      },
+    }
   }
 }
