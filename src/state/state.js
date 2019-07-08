@@ -36,7 +36,15 @@ class State {
   }
 
   [Symbol.asyncIterator]() {
-    return this
+    let state = this
+    return {
+      next() {
+        return state.next().then(({ value, done }) => {
+          state = value
+          return { value, done }
+        })
+      },
+    }
   }
 
   get done() {
@@ -48,7 +56,8 @@ class State {
   }
 
   async next(...assertions) {
-    return this.done && assertions.length === 0
+    const done = this.done && assertions.length === 0
+    return done
       ? {
           done: true,
           value: this,
@@ -59,7 +68,7 @@ class State {
             assertions: [...resolved, ...assertions],
             history: [...this.history, this],
           })
-          const done = value.summary.pending === 0
+          const done = false
           return { done, value }
         })
   }

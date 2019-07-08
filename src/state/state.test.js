@@ -75,6 +75,23 @@ describe("state module", async assert => {
       const should = inspect`have summary ${expected}`
       assert({ given, should, actual, expected })
     }
+
+    {
+      const history = []
+      for await (const state of s0) {
+        history.push(state)
+      }
+      const actual = history.pop().summary
+      const expected = {
+        pending: 0,
+        passing: 5,
+        failing: 2,
+        length: 7,
+      }
+      const given = inspect``
+      const should = inspect``
+      assert({ given, should, actual, expected })
+    }
   }
 
   const iH = p(a({ actual: "H", expected: "H" }))
@@ -168,7 +185,7 @@ describe("state module", async assert => {
 
     {
       const actual = s2done
-      const expected = true
+      const expected = false
       const given = inspect`s2`
       const should = inspect`should not be done`
       assert({ given, should, actual, expected })
