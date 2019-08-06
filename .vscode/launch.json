@@ -10,8 +10,12 @@
       "name": "Launch File",
       "program": "${file}",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["-r", "esm"],
-      "outputCapture": "std"
+      "runtimeArgs": [
+        "-r",
+        "esm"
+      ],
+      "outputCapture": "std",
+      // "autoAttachChildProcesses": true,
     }
   ]
 }

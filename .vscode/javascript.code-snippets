@@ -6,6 +6,11 @@
       "export { $1 } from \"./$1.js\"",
     ]
   },
+  "Tap Helper": {
+    "prefix": "tap",
+    "description": "tap to riteway compatibility",
+    "body": "const tap = assert => plan => { return ({ given, should, actual, expected }) => { assert.same( actual, expected, `given ${given}; should ${should}` ) } }"
+  },
   "Riteway-Style Test": {
     "prefix": "plan",
     "description": "Insert Test Plan",
