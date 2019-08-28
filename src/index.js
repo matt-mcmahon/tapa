@@ -1,3 +1,5 @@
-export { describe } from "./describe"
+import { describe } from "./describe"
 export { captureStack } from "./stack"
 export { inspect } from "./inspect"
+
+export { describe }

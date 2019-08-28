@@ -1,4 +1,4 @@
-import { describe, Try } from "riteway"
+import { test as describe } from "tap"
 import { inspect } from "../inspect"
 import { captureStack } from "./stack"
 import { captureStack as indexExport } from "."

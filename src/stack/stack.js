@@ -1,6 +1,8 @@
 import { parse, relative } from "path"
 import { pipe, map, join } from "@mwm/functional"
 
+import { inspect } from "../inspect"
+
 Error.prepareStackTrace = (error, structuredStackTrace) => {
   return error[Symbol.for("TapaError")]
     ? tapaStack(structuredStackTrace)
@@ -46,7 +48,17 @@ const extractStackData = c => {
 }
 
 const parsePath = ({ source, ...c }) => {
-  const r = parse(relative(process.cwd(), source))
+  const cwd = process.cwd()
+  const relativePath = relative(cwd, source)
+  const r = parse(relativePath)
+
+  console.log(
+    inspect`\nparsePath: ${{
+      cwd: process.cwd(),
+      source,
+      relative: relativePath,
+    }}\n`
+  )
 
   if (source.startsWith("internal")) {
     c.isInternal = true

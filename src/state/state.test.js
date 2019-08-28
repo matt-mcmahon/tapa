@@ -1,4 +1,4 @@
-import { describe } from "riteway"
+import { test as describe } from "tap"
 import { prop } from "@mwm/functional"
 
 import { inspect } from "../inspect"

@@ -1,4 +1,4 @@
-import { describe, Try } from "riteway"
+import { test as describe } from "tap"
 import { inspect } from "../inspect"
 import { deepEqual } from "./deepEqual"
 import { deepEqual as indexExport } from "."

@@ -9,6 +9,7 @@
     "chokidar": "^3.0.0",
     "deep-equal": "^1.0.1",
     "esm": "^3.2.25",
+    "globby": "^10.0.1",
     "pretty-error": "^2.1.1",
     "ramda": "^0.26.1",
     "renderkid": "^2.0.3",
@@ -18,9 +19,7 @@
   "devDependencies": {
     "prettier": "^1.17.1",
     "prettier-check": "^2.0.0",
-    "riteway": "^6.0.3",
-    "tap-nirvana": "^1.1.0",
-    "tape": "^4.10.2"
+    "tap": "^14.4.1"
   },
   "esm": {
     "sourceMap": true,
@@ -41,8 +40,9 @@
     "url": "git+https://github.com/matt-mcmahon/tapa.git"
   },
   "scripts": {
+    "t": "node -r esm ./scripts/run-tests.js",
     "lint": "standard ./src/**/*.js",
-    "test": "node -r esm ./scripts/run-tests.js | tap-nirvana",
+    "test": "tap -r esm ./src/**/*.test.js",
     "watch": "node -r esm ./scripts/watch-tests.js"
   },
   "types": "source/index.d.ts",

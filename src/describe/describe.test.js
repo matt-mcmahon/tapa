@@ -1,4 +1,4 @@
-import { describe as rw } from "riteway"
+import { test as describe } from "tap"
 import { describe as indexExport } from "."
 import { inspect } from "../inspect"
 import { describe } from "./describe"
@@ -22,13 +22,11 @@ rw("describe module", async assert => {
 
   const description = "my description"
   const plan = async assert => {
-    {
-      const given = inspect`a test assertion`
-      const should = inspect`do something?`
-      const actual = "A"
-      const expected = "A"
-      assert({ given, should, actual, expected })
-    }
+    const given = inspect`a test assertion`
+    const should = inspect`do something?`
+    const actual = "A"
+    const expected = "A"
+    assert({ given, should, actual, expected })
   }
   const d0 = describe
   const d0promise = d0(description, plan)

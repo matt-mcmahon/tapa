@@ -1,16 +1,28 @@
-import { describe } from "riteway"
+import { test as describe } from "tap"
 import { assert as indexExport } from "."
 import { inspect } from "../inspect"
 import { failing, passing } from "../status"
 import { assert } from "./assert"
 
-describe("assert module", async rwAssert => {
+const tape = assert => {
+  return ({ given, should, actual, expected }) => {
+    assert.same(
+      actual,
+      expected,
+      `given ${given}; should ${should}`
+    )
+  }
+}
+
+describe("assert module", async __assert => {
+  const tap = tape(__assert)
+
   {
     const given = '"assert" import'
     const should = "be a function"
     const actual = typeof assert
     const expected = "function"
-    rwAssert({ given, should, actual, expected })
+    tap({ given, should, actual, expected })
   }
 
   {
@@ -18,7 +30,7 @@ describe("assert module", async rwAssert => {
     const should = 'be identical to "assert" export'
     const actual = indexExport
     const expected = assert
-    rwAssert({ given, should, actual, expected })
+    tap({ given, should, actual, expected })
   }
 
   // Passing Assertion
@@ -35,7 +47,7 @@ describe("assert module", async rwAssert => {
       const should = inspect`return a Promise`
       const actual = promise instanceof Promise
       const expected = true
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     const assertion = await promise
@@ -51,7 +63,7 @@ describe("assert module", async rwAssert => {
       }
       const given = inspect`passing assertion`
       const should = inspect`be ${expected}`
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     {
@@ -59,7 +71,7 @@ describe("assert module", async rwAssert => {
       const given = "an assertion"
       const should = inspect`coerce to ${actual}`
       const expected = `${passing} given A; should B`
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     {
@@ -67,7 +79,7 @@ describe("assert module", async rwAssert => {
       const should = inspect`be frozen`
       const actual = Object.isFrozen(assertion)
       const expected = true
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
   }
 
@@ -85,7 +97,7 @@ describe("assert module", async rwAssert => {
       const should = inspect`return a Promise`
       const actual = promise instanceof Promise
       const expected = true
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     const { stack, ...assertion } = await promise
@@ -101,7 +113,7 @@ describe("assert module", async rwAssert => {
       }
       const given = inspect`a failing assertion`
       const should = inspect`be ${expected}`
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     {
@@ -109,7 +121,7 @@ describe("assert module", async rwAssert => {
       const should = inspect`have a stack`
       const actual = stack && stack.length > 0
       const expected = true
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
   }
 
@@ -129,7 +141,7 @@ describe("assert module", async rwAssert => {
       const should = inspect`return a Promise`
       const actual = promise instanceof Promise
       const expected = true
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
 
     const { stack, ...assertion } = await promise
@@ -145,7 +157,7 @@ describe("assert module", async rwAssert => {
         expected: 14,
         status: passing,
       }
-      rwAssert({ given, should, actual, expected })
+      tap({ given, should, actual, expected })
     }
   }
 })

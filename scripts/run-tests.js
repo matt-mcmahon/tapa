@@ -1,7 +1,10 @@
-'use strict'
+import { runner } from "../src/runner"
+import { inspect } from "../src/inspect"
 
-const { runner } = require('../src/test-runner')
-
-const tests = runner(`./src/**/*.test.js`)
-
-setTimeout(tests.run.bind(tests), 2000)
+runner(`./src/**/*.test.js`)
+  .then(value => {
+    console.log(inspect`Promise Resolved: ${value}`)
+  })
+  .catch(err => {
+    console.log(inspect`Promise Rejected: ${err.message}`)
+  })
