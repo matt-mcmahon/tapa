@@ -1,38 +1,37 @@
-import test from "../node-assert"
-import { default as captureStack } from "./stack"
-import { normalize } from "path"
-import { fileURLToPath } from "url"
+import test from '../node-assert/index.js'
+import captureStack from './stack.js'
+import { fileURLToPath } from 'url'
 
 const factory = (name, options = {}) =>
   Object.assign({}, options, { name })
 
 const decoratedFactory = captureStack(factory)
 
-const obj = decoratedFactory("capture-test", {
-  value: "foo",
-  message: "this message should appear after object.name",
+const obj = decoratedFactory('capture-test', {
+  value: 'foo',
+  message: 'this message should appear after object.name'
 })
 
-const fileName = fileURLToPath(import.meta.url)
+const fileName = fileURLToPath('src/capture-stack/stack.test.js')
 
 test(
   fileName,
   t => {
-    const expected = "function"
+    const expected = 'function'
     const actual = typeof captureStack
     const message = `type should be "${expected}" not "${actual}"`
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = "function"
+    const expected = 'function'
     const actual = typeof decoratedFactory
     const message = `typeof factory should be "${expected}" not "${actual}"`
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = "string"
+    const expected = 'string'
     const actual = typeof obj.stack
-    const message = `stack should be a string`
+    const message = 'stack should be a string'
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
@@ -44,10 +43,10 @@ test(
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const file = require.resolve("./stack")
+    const file = './stack' // resolve('./stack')
     const expected = false
     const actual = obj.stack.includes(file)
-    const message = `should NOT contain stack module in the stack`
+    const message = 'should NOT contain stack module in the stack'
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
@@ -57,19 +56,19 @@ test(
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = "capture-test"
+    const expected = 'capture-test'
     const actual = obj.name
-    const message = `it should inherit "name" from the factory function`
+    const message = 'it should inherit "name" from the factory function'
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = "foo"
+    const expected = 'foo'
     const actual = obj.value
-    const message = `it should inherit "value" from the factory function`
+    const message = 'it should inherit "value" from the factory function'
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const lines = obj.stack.split("\n")
+    const lines = obj.stack.split('\n')
     const expected = `${obj.name}: ${obj.message}`
     const actual = lines[0]
     const message = `line zero should be "${expected}" not "${actual}"`

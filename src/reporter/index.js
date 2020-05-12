@@ -1,11 +1,8 @@
-'use strict'
+import { renderError, printError, catchUncaughtExceptions } from './error.js'
+import printReport from './reporter.js'
 
-const {
-  renderError, printError, catchUncaughtExceptions
-} = require('./error.js')
-
-module.exports = {
-  printReport: require('./reporter'),
+export {
+  printReport,
   renderError,
   printError,
   catchUncaughtExceptions

@@ -3,9 +3,9 @@
   "version": "0.7.1",
   "description": "An experiment in more function testing.",
   "scripts": {
-    "lint": "standard -r esm ./src/**/*.js",
-    "test": "node -r esm ./scripts/run-tests.js",
-    "watch": "node -r esm ./scripts/watch-tests.js"
+    "lint": "eslint ./src/**/*.js",
+    "test": "node ./scripts/run-tests.js",
+    "watch": "node ./scripts/watch-tests.js"
   },
   "repository": {
     "type": "git",
@@ -21,18 +21,25 @@
   "bugs": {
     "url": "https://github.com/matt-mcmahon/tapa/issues"
   },
-  "devDependencies": {
-    "standard": "^14.3.1"
-  },
   "dependencies": {
     "@mwm/functional": "^5.3.0",
-    "chalk": "^2.4.2",
-    "chokidar": "^3.3.0",
-    "esm": "^3.2.25",
-    "monet": "^0.9.0",
-    "pretty-error": "^2.1.1"
+    "chalk": "^4.0.0",
+    "chokidar": "^3.4.0",
+    "fluture": "^12.2.0",
+    "monet": "^0.9.1",
+    "pretty-error": "^2.1.1",
+    "sanctuary": "^3.0.0"
   },
   "homepage": "https://github.com/matt-mcmahon/tapa#readme",
   "main": "index.js",
-  "module": "main.js"
+  "module": "main.js",
+  "devDependencies": {
+    "eslint": "^7.0.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "type": "module"
 }

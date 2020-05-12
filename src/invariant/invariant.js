@@ -1,14 +1,14 @@
-import { Maybe, Success, Fail } from "monet"
+import { Maybe, Success, Fail } from 'monet'
 import {
   complement,
   either,
   equals,
   has,
   isEmpty,
-  isNil,
-} from "@mwm/functional"
+  isNil
+} from '@mwm/functional'
 
-import getDefaultMessage from "./message"
+import getDefaultMessage from './message.js'
 
 const isSomething = complement(either(isNil)(isEmpty))
 
@@ -16,9 +16,9 @@ const isSomething = complement(either(isNil)(isEmpty))
 const evaluate = o => {
   const { predicate, expected, actual } = o
 
-  const p = has("predicate")(o)
-  const e = has("expected")(o)
-  const a = has("actual")(o)
+  const p = has('predicate')(o)
+  const e = has('expected')(o)
+  const a = has('actual')(o)
 
   if (p && a && e) return predicate(expected, actual)
   if (p && a) return predicate(actual)
@@ -27,18 +27,18 @@ const evaluate = o => {
   if (a) return isSomething(actual)
 
   throw new Error(
-    `Invariant must have at least one of: predicate, actual`
+    'Invariant must have at least one of: predicate, actual'
   )
 }
 /* eslint-enable space-in-parens, no-multi-spaces */
 
 class Invariant {
-  constructor(description) {
+  constructor (description) {
     Object.assign(this, description)
     this.message = getDefaultMessage(description)
   }
 
-  run() {
+  run () {
     if (this.skip) {
       return Maybe.Some(this)
     } else if (this.fails) {
@@ -52,11 +52,11 @@ class Invariant {
     }
   }
 
-  static of(description) {
+  static of (description) {
     return new Invariant(description)
   }
 
-  static invariant(description) {
+  static invariant (description) {
     return new Invariant(description)
   }
 }

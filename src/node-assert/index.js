@@ -1,10 +1,10 @@
-const assert = require('assert').strict
+import { strict as assert } from 'assert'
 
 const pass = 'ok'
 const fail = 'not ok'
 
 const test = (message, ...tests) => {
-  const runTest = (test, id = ``) => {
+  const runTest = (test, id = '') => {
     try {
       test(assert)
       console.log(`${id.padStart(4)}: ${pass}`)
@@ -17,4 +17,4 @@ const test = (message, ...tests) => {
   tests.map((f, i) => runTest(f, `${i}`))
 }
 
-module.exports = test
+export default test

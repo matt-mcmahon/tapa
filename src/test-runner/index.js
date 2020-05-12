@@ -1,8 +1,4 @@
-'use strict'
+import tr from './test-runner.js'
 
-const runner = require('./test-runner')
-
-module.exports = {
-  runner: runner(false),
-  watcher: runner(true)
-}
+export const runner = tr(false)
+export const watcher = tr(true)

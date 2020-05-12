@@ -1,7 +1,5 @@
-'use strict'
+import { runner } from '../src/test-runner/index.js'
 
-const { runner } = require('../src/test-runner')
-
-const tests = runner(`./src/**/*.test.js`)
+const tests = runner('./src/**/*.test.js')
 
 setTimeout(tests.run.bind(tests), 2000)

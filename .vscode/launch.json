@@ -10,8 +10,9 @@
       "name": "Launch File",
       "program": "${file}",
       "runtimeArgs": [
-        "-r",
-        "esm"
+        // "-r",
+        // "esm"
+        "--experimental-specifier-resolution=node"
       ],
       "outputCapture": "std"
     }

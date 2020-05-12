@@ -1,7 +1,4 @@
-'use strict'
+import Plan from './plan.js'
+const plan = Plan.of
 
-const Plan = require('./plan')
-
-module.exports = {
-  plan: Plan.of
-}
+export { plan, Plan }

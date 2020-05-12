@@ -1,20 +1,18 @@
-'use strict'
+import { fork } from 'child_process'
+import { IO } from 'monet'
+import { watch } from 'chokidar'
 
-const { fork } = require('child_process')
-const { IO } = require('monet')
-const { watch } = require('chokidar')
-
-const { printError } = require('../reporter')
+import { printError } from '../reporter/index.js'
 
 const runScript = script => fork(script, null, { stdio: true })
 
 const runner = (persistent = false) =>
-(pattern = `./src/**/*.test.js`) =>
-IO(async () => {
-  watch(pattern, { cwd: process.cwd(), persistent })
-    .on('change', runScript)
-    .on('add', runScript)
-    .on('error', printError)
-})
+  (pattern = './src/**/*.test.js') =>
+    IO(async () => {
+      watch(pattern, { cwd: process.cwd(), persistent })
+        .on('change', runScript)
+        .on('add', runScript)
+        .on('error', printError)
+    })
 
-module.exports = runner
+export default runner

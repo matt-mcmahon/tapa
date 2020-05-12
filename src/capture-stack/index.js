@@ -1,5 +1,3 @@
-const stack = require('./stack')
+import stack from './stack.js'
 
-module.exports = {
-  captureStack: stack
-}
+export const captureStack = stack

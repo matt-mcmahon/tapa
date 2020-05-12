@@ -1,6 +1,4 @@
-'use strict'
-
-const { assert } = require('../assert')
+import { assert } from '../assert/index.js'
 
 const getFirstParent = module => {
   if (module.parent) {
@@ -43,4 +41,4 @@ class Plan extends Array {
   }
 }
 
-module.exports = Plan
+export default Plan

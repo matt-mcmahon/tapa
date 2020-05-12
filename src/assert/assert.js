@@ -1,26 +1,18 @@
-import {
-  assoc,
-  bind,
-  clone,
-  pipe,
-  tap,
-} from "@mwm/functional"
-
-import { invariant } from "../invariant"
+import { assoc, bind, clone, pipe, tap } from '@mwm/functional'
+import { invariant } from '../invariant/index.js'
+import processArgument from './process-argument.js'
 
 const assocStack = constructor => obj => {
   const stack = clone(obj)
   Error.captureStackTrace(stack, constructor)
-  Object.defineProperty(stack, "stack", {
-    enumerable: true,
+  Object.defineProperty(stack, 'stack', {
+    enumerable: true
   })
   return invariant(stack)
 }
 
-import processArgument from "./process-argument"
-
 const Assert = plan => {
-  const append = tap(bind(plan.push, plan))
+  const append = tap(bind(plan.push)(plan))
 
   const assert = invariantOptions => {
     return pipe(
@@ -33,7 +25,7 @@ const Assert = plan => {
   const fails = invariantOptions => {
     return pipe(
       processArgument,
-      assoc("fails", true),
+      assoc('fails', true),
       assocStack(fails),
       append
     )(invariantOptions)
@@ -42,7 +34,7 @@ const Assert = plan => {
   const skip = invariantOptions => {
     return pipe(
       processArgument,
-      assoc("skip", true),
+      assoc('skip', true),
       assocStack(skip),
       append
     )(invariantOptions)
@@ -51,11 +43,11 @@ const Assert = plan => {
   const comment = message => {
     return pipe(
       processArgument,
-      assoc("skip", true),
+      assoc('skip', true),
       assocStack(comment),
       append
     )({
-      message: message,
+      message: message
     })
   }
 
@@ -65,8 +57,8 @@ const Assert = plan => {
 
   Object.defineProperties(assert, {
     constructor: {
-      value: Assert,
-    },
+      value: Assert
+    }
   })
 
   return assert

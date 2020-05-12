@@ -1,85 +1,85 @@
-import test from "../node-assert"
-import { equals, F, T } from "@mwm/functional"
-import { invariant } from "./invariant"
+import test from '../node-assert'
+import { equals, F, T } from '@mwm/functional'
+import { invariant } from './invariant.js'
 
 test(
-  import.meta.url,
+  'src/invariant/invariant.js',
   t => {
     const i = invariant({
-      predicate: T,
+      predicate: T
     })
     const actual = i.run().isSuccess()
-    const message = `should pass, predicate returns true`
+    const message = 'should pass, predicate returns true'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
-      predicate: F,
+      predicate: F
     })
     const actual = i.run().isFail()
-    const message = `should fail, predicate returns false`
+    const message = 'should fail, predicate returns false'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
-      actual: "something",
+      actual: 'something'
     })
     const actual = i.run().isSuccess()
-    const message = `should pass, "something" is something`
+    const message = 'should pass, "something" is something'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
-      actual: [],
+      actual: []
     })
     const actual = i.run().isFail()
-    const message = `should fail, empty array is nothing`
+    const message = 'should fail, empty array is nothing'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
-      actual: "",
+      actual: ''
     })
     const actual = i.run().isFail()
-    const message = `should fail, empty string is nothing`
+    const message = 'should fail, empty string is nothing'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
       expected: 1,
-      actual: 1,
+      actual: 1
     })
     const actual = i.run().isSuccess()
-    const message = `should pass, 1 === 1 using implied predicate`
+    const message = 'should pass, 1 === 1 using implied predicate'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
       predicate: equals,
       expected: 1,
-      actual: 1,
+      actual: 1
     })
     const actual = i.run().isSuccess()
-    const message = `should pass, 1 === 1 using explicit predicate`
+    const message = 'should pass, 1 === 1 using explicit predicate'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
       expected: 2,
-      actual: 1,
+      actual: 1
     })
     const actual = i.run().isFail()
-    const message = `should fail, 1 === 2 using implied predicate`
+    const message = 'should fail, 1 === 2 using implied predicate'
     t.ok(actual, message)
   },
   t => {
     const i = invariant({
       predicate: equals,
       expected: 2,
-      actual: 1,
+      actual: 1
     })
     const actual = i.run().isFail()
-    const message = `should fail, 1 === 2 using explicit predicate`
+    const message = 'should fail, 1 === 2 using explicit predicate'
     t.ok(actual, message)
   }
 )

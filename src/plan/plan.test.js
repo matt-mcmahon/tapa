@@ -1,20 +1,20 @@
-"use strict"
+import nodeAssert from '../node-assert/index.js'
+import { of as plan } from './plan.js'
 
-const nodeAssert = require("../node-assert")
-const { of: plan } = require("./plan")
-
-const description = "Test Plan"
+const description = 'Test Plan'
 
 const T = () => true
 
 const test = plan(description, tapaAssert => {
-  tapaAssert({ message: "test 1", predicate: T })
-  tapaAssert({ message: "test 2", predicate: T })
-  tapaAssert({ message: "test 3", predicate: T })
+  tapaAssert({ message: 'test 1', predicate: T })
+  tapaAssert({ message: 'test 2', predicate: T })
+  tapaAssert({ message: 'test 3', predicate: T })
 })
 
+const filepath = 'src/plan/plan.js'
+
 nodeAssert(
-  import.meta.url,
+  filepath,
   t => {
     const expected = description
     const actual = test.description
@@ -28,7 +28,7 @@ nodeAssert(
     t.deepEqual(actual, expected, message)
   },
   t => {
-    const expected = import.meta.url
+    const expected = filepath
     const actual = test.filename
     const message = `Should be "${expected}" not "${actual}"`
     t.deepEqual(actual, expected, message)

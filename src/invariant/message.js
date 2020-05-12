@@ -3,28 +3,28 @@ import {
   both,
   defaultTo,
   has,
-  ifElse,
-} from "@mwm/functional"
+  ifElse
+} from '@mwm/functional'
 
-const message = ifElse(has("message"))(
+const message = ifElse(has('message'))(
   ({ message }) => message
 )(
   always(undefined) // needed for defaultTo
 )
 
 const expected = ifElse(
-  has("expected"),
+  has('expected'),
   ({ expected }) => `Expected(${expected})`,
-  always("")
+  always('')
 )
 
-const comma = ifElse(both(has("actual"))(has("expected")))(
-  always(", ")
-)(always(""))
+const comma = ifElse(both(has('actual'))(has('expected')))(
+  always(', ')
+)(always(''))
 
-const actual = ifElse(has("actual"))(
+const actual = ifElse(has('actual'))(
   ({ actual }) => `Actual(${actual})`
-)(always(""))
+)(always(''))
 
 export default plan => {
   const e = expected(plan)

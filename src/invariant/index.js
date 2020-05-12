@@ -1,7 +1,4 @@
-'use strict'
+import Invariant from './invariant.js'
 
-const Invariant = require('./invariant')
-
-module.exports = {
-  invariant: Invariant.of
-}
+export const invariant = Invariant.of
+export { Invariant as default }

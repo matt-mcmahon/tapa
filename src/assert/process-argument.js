@@ -1,4 +1,4 @@
-module.exports = argument => {
+export default argument => {
   if (typeof argument === 'string') {
     return {
       message: argument
