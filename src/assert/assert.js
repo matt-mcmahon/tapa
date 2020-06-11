@@ -6,7 +6,7 @@ import {
   tap,
 } from "@mwm/functional"
 
-import { invariant } from "../invariant"
+import { invariant } from "../invariant/index.js"
 
 const assocStack = constructor => obj => {
   const stack = clone(obj)
@@ -17,7 +17,7 @@ const assocStack = constructor => obj => {
   return invariant(stack)
 }
 
-import processArgument from "./process-argument"
+import processArgument from "./process-argument.js"
 
 const Assert = plan => {
   const append = tap(bind(plan.push, plan))

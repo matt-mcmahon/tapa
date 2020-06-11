@@ -1,6 +1,4 @@
-'use strict'
-
-const { watcher } = require('../src/test-runner')
+import { watcher } from "../src/test-runner"
 
 const tests = watcher(`./src/**/*.test.js`)
 

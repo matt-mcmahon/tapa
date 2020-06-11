@@ -8,9 +8,11 @@ import {
   isNil,
 } from "@mwm/functional"
 
-import getDefaultMessage from "./message"
+import getDefaultMessage from "./message.js"
 
-const isSomething = complement(either(isNil)(isEmpty))
+const isSomething = complement(
+  either(isNil)(isEmpty)
+)
 
 /* eslint-disable space-in-parens, no-multi-spaces */
 const evaluate = o => {
@@ -20,7 +22,8 @@ const evaluate = o => {
   const e = has("expected")(o)
   const a = has("actual")(o)
 
-  if (p && a && e) return predicate(expected, actual)
+  if (p && a && e)
+    return predicate(expected, actual)
   if (p && a) return predicate(actual)
   if (p) return predicate()
   if (a && e) return equals(expected)(actual)
@@ -61,6 +64,11 @@ class Invariant {
   }
 }
 
-const invariant = description => new Invariant(description)
+const invariant = description =>
+  new Invariant(description)
 
-export { invariant, Invariant, Invariant as default }
+export {
+  invariant,
+  Invariant,
+  Invariant as default,
+}

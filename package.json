@@ -3,9 +3,9 @@
   "version": "0.7.1",
   "description": "An experiment in more function testing.",
   "scripts": {
-    "lint": "standard -r esm ./src/**/*.js",
-    "test": "node -r esm ./scripts/run-tests.js",
-    "watch": "node -r esm ./scripts/watch-tests.js"
+    "lint": "standard ./src/**/*.js",
+    "test": "node ./scripts/run-tests.js",
+    "watch": "node ./scripts/watch-tests.js"
   },
   "repository": {
     "type": "git",
@@ -13,8 +13,7 @@
   },
   "keywords": [
     "experimental",
-    "testing",
-    "framework"
+    "testing"
   ],
   "author": "Matt McMahon <contact@matt-mcmahon.com> (http://matt-mcmahon.com/)",
   "license": "MIT",
@@ -25,14 +24,12 @@
     "standard": "^14.3.1"
   },
   "dependencies": {
-    "@mwm/functional": "^5.3.0",
     "chalk": "^2.4.2",
     "chokidar": "^3.3.0",
-    "esm": "^3.2.25",
-    "monet": "^0.9.0",
+    "fp-ts": "^2.6.1",
+    "io-ts": "^2.2.3",
     "pretty-error": "^2.1.1"
   },
   "homepage": "https://github.com/matt-mcmahon/tapa#readme",
-  "main": "index.js",
-  "module": "main.js"
+  "type": "module"
 }

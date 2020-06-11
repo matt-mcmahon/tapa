@@ -1,5 +1,5 @@
-import test from "../node-assert"
-import { default as captureStack } from "./stack"
+import test from "../node-assert/index.js"
+import { default as captureStack } from "./stack.js"
 import { normalize } from "path"
 import { fileURLToPath } from "url"
 
@@ -10,7 +10,8 @@ const decoratedFactory = captureStack(factory)
 
 const obj = decoratedFactory("capture-test", {
   value: "foo",
-  message: "this message should appear after object.name",
+  message:
+    "this message should appear after object.name",
 })
 
 const fileName = fileURLToPath(import.meta.url)
@@ -38,9 +39,7 @@ test(
   t => {
     const expected = true
     const actual = obj.stack.includes(fileName)
-    const message = `should contain file ${fileName} in the stack\n${
-      obj.stack
-    }`
+    const message = `should contain file ${fileName} in the stack\n${obj.stack}`
     t.deepStrictEqual(actual, expected, message)
   },
   t => {

@@ -1,6 +1,6 @@
-import test from "../node-assert"
+import test from "../node-assert/index.js"
 import { equals, F, T } from "@mwm/functional"
-import { invariant } from "./invariant"
+import { invariant } from "./invariant.js"
 
 test(
   import.meta.url,

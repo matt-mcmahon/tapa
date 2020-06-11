@@ -1,5 +1,5 @@
-import test from "../node-assert"
-import getDefaultMessage from "./message"
+import test from "../node-assert/index.js"
+import getDefaultMessage from "./message.js"
 
 test(
   import.meta.url,
@@ -12,7 +12,8 @@ test(
     t.deepStrictEqual(actual, expected, message)
   },
   t => {
-    const expected = "Assert(Expected(1), Actual(1))"
+    const expected =
+      "Assert(Expected(1), Actual(1))"
     const actual = getDefaultMessage({
       expected: 1,
       actual: 1,

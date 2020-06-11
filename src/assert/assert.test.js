@@ -1,13 +1,10 @@
-"use strict"
-
 import { inspect } from "util"
-import test from "../node-assert"
-
 import { equals, F, has } from "@mwm/functional"
 
-const mockPlan = []
+import test from "../node-assert/index.js"
+import tapaAssert from "./assert.js"
 
-import tapaAssert from "./assert"
+const mockPlan = []
 
 test(
   import.meta.url,
@@ -113,15 +110,13 @@ test(
           i.stack.length > 0,
           "stack length should be > 0"
         )
-        return i
-          .run()
-          .cata(
-            () => [pass, fail + 1, skip],
-            v =>
-              v.skip
-                ? [pass, fail, skip + 1]
-                : [pass + 1, fail, skip]
-          )
+        return i.run().cata(
+          () => [pass, fail + 1, skip],
+          v =>
+            v.skip
+              ? [pass, fail, skip + 1]
+              : [pass + 1, fail, skip]
+        )
       },
       [0, 0, 0]
     )

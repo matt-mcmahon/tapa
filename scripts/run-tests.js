@@ -1,6 +1,4 @@
-'use strict'
-
-const { runner } = require('../src/test-runner')
+import { runner } from "../src/test-runner"
 
 const tests = runner(`./src/**/*.test.js`)
 
